@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'lab2task4'
+package_name = 'bot'
 
 setup(
     name=package_name,
@@ -19,9 +19,9 @@ setup(
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': ['service = lab2task4.sense:main',
-                            'client = lab2task4.client:main',
-                            'salsa = lab2task4.control:main',
+        'console_scripts': ['service = bot.sense:main',
+                            'client = bot.client:main',
+                            'salsa = bot.control:main',
         ],
     },
 )    
