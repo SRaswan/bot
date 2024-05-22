@@ -39,27 +39,39 @@ class SampleControllerAsync(Node):
             return 2
         return -1
 
-    def pupper(self):
-        if not self.awaiting_input:
-            new_move = random.randint(0, 2)
-            self.sensor_stack.append(new_move)
-            self.awaiting_input = True
-            self.current_move_index = 0
-            print("New move added to the sequence. Awaiting user input...")
+    def perform_sensor_stack_moves(self):
+        for move in self.sensor_stack:
+            self.send_move_request(move)
+            time.sleep(1)
 
-        if self.awaiting_input:
+    def pupper(self):
+        new_move = random.randint(0, 2)
+        self.sensor_stack.append(new_move)
+
+        print("Dancing with" + new_move)
+
+        for move in self.sensor_stack:
+            self.send_move_request(move)
+            time.sleep(1)
+        
+        print("New move added to the sequence. Awaiting user input...")
+        self.input_mode = True
+        self.idx = 0
+
+
+        while self.input_mode:
             response = self.get_user_input()
             if response != -1:
-                if response == self.sensor_stack[self.current_move_index]:
-                    self.current_move_index += 1
-                    if self.current_move_index >= len(self.sensor_stack):
+                if response == self.sensor_stack[self.idx]:
+                    self.idx += 1
+                    if self.idx >= len(self.sensor_stack):
                         print("Correct! Moving to the next level.")
                         self.send_move_request(self.sensor_stack[-1])
-                        self.awaiting_input = False
+                        self.input_mode = False
                 else:
                     print("You failed! Try again.")
                     self.sensor_stack = []
-                    self.awaiting_input = False
+                    self.input_mode = False
 
 def main():
     GPIO.setmode(GPIO.BCM)
