@@ -20,8 +20,9 @@ class SampleControllerAsync(Node):
         self.current_move_index = 0
         self.awaiting_input = False
 
-    def send_move_request(self, move_command):
-        self.req.command = move_command
+    def send_move_request(self, idx):
+        move_commands = ["move_forward", "move_right", "move_left"]
+        self.req.command = move_commands[idx]
         self.future = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
@@ -65,7 +66,7 @@ def main():
     GPIO.setup(6, GPIO.IN)
     GPIO.setup(3, GPIO.IN)
     GPIO.setup(16, GPIO.IN)
-    
+
     rclpy.init()
     sample_controller = SampleControllerAsync()
 
