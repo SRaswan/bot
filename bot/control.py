@@ -45,33 +45,40 @@ class SampleControllerAsync(Node):
             time.sleep(1)
 
     def pupper(self):
-        # Phase 0: Moving
+        # Phase 0: Choosing move
         if self.phase == 0:
             new_move = random.randint(0, 2)
             self.sensor_stack.append(new_move)
-            print("Dancing with" + new_move)
-            for move in self.sensor_stack:
-                self.send_move_request(move)
-                time.sleep(1)
-            print("New move added to the sequence. Awaiting user input...")
+            print("Added move " + new_move)
             self.phase = 1
             self.idx = 0
 
-        # Phase 1: Sensing
+        # Phase 1: Choosing move
         if self.phase == 1:
+            print("Dancing")
+            if self.idx < len(self.sensor_stack):
+                self.send_move_request(self.sensor_stack[idx])
+                self.idx += 1
+            else:
+                self.phase = 2
+                self.idx = 0
+    
+        # Phase 2: Sensing
+        if self.phase == 2:
+            print("Response")
             response = self.get_user_input()
             if response != -1:
                 if response == self.sensor_stack[self.idx]:
                     self.idx += 1
-                    print("Nice. keep going")
+                    print("Nice! Keep going")
                     if self.idx >= len(self.sensor_stack):
                         print("Correct! Moving to the next level.")
                         self.send_move_request(self.sensor_stack[-1])
-                        self.phase = 2
+                        self.phase = 0
                 else:
                     print("You failed! Try again.")
                     self.sensor_stack = []
-                    self.phase = 2
+                    self.phase = 3
 
 def main():
     GPIO.setmode(GPIO.BCM)
