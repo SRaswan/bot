@@ -17,8 +17,8 @@ class SampleControllerAsync(Node):
         self.req = GoPupper.Request()
         self.sensor_stack = []
         self.timer = self.create_timer(1.0, self.pupper)
-        self.current_move_index = 0
-        self.awaiting_input = False
+        self.idx = 0
+        self.phase = 0
 
     def send_move_request(self, idx):
         move_commands = ["move_forward", "move_right", "move_left"]
@@ -45,21 +45,20 @@ class SampleControllerAsync(Node):
             time.sleep(1)
 
     def pupper(self):
-        new_move = random.randint(0, 2)
-        self.sensor_stack.append(new_move)
+        # Phase 0: Moving
+        if self.phase == 0:
+            new_move = random.randint(0, 2)
+            self.sensor_stack.append(new_move)
+            print("Dancing with" + new_move)
+            for move in self.sensor_stack:
+                self.send_move_request(move)
+                time.sleep(1)
+            print("New move added to the sequence. Awaiting user input...")
+            self.phase = 1
+            self.idx = 0
 
-        print("Dancing with" + new_move)
-
-        for move in self.sensor_stack:
-            self.send_move_request(move)
-            time.sleep(1)
-        
-        print("New move added to the sequence. Awaiting user input...")
-        self.input_mode = True
-        self.idx = 0
-
-
-        while self.input_mode:
+        # Phase 1: Sensing
+        if self.phase == 1:
             response = self.get_user_input()
             if response != -1:
                 if response == self.sensor_stack[self.idx]:
@@ -68,11 +67,11 @@ class SampleControllerAsync(Node):
                     if self.idx >= len(self.sensor_stack):
                         print("Correct! Moving to the next level.")
                         self.send_move_request(self.sensor_stack[-1])
-                        self.input_mode = False
+                        self.phase = 2
                 else:
                     print("You failed! Try again.")
                     self.sensor_stack = []
-                    self.input_mode = False
+                    self.phase = 2
 
 def main():
     GPIO.setmode(GPIO.BCM)
