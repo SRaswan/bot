@@ -64,6 +64,7 @@ class SampleControllerAsync(Node):
             if response != -1:
                 if response == self.sensor_stack[self.idx]:
                     self.idx += 1
+                    print("Nice. keep going")
                     if self.idx >= len(self.sensor_stack):
                         print("Correct! Moving to the next level.")
                         self.send_move_request(self.sensor_stack[-1])
