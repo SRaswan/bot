@@ -61,7 +61,7 @@ class SampleControllerAsync(Node):
         if self.phase == 1:
             print("Dancing")
             if self.idx < len(self.sensor_stack):
-                self.send_move_request(self.sensor_stack[idx])
+                self.send_move_request(self.sensor_stack[self.idx])
                 self.idx += 1
             else:
                 self.phase = 2
