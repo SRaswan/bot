@@ -16,9 +16,10 @@ class SampleControllerAsync(Node):
 
         self.req = GoPupper.Request()
         self.sensor_stack = []
-        self.timer = self.create_timer(1.0, self.pupper)
         self.idx = 0
         self.phase = 0
+        self.timer = self.create_timer(1.0, self.pupper)
+
 
     def send_move_request(self, idx):
         move_commands = ["move_forward", "move_right", "move_left"]
