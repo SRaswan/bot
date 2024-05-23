@@ -1,9 +1,12 @@
 from pupper_interfaces.srv import GoPupper
+from MangDang.mini_pupper.display import Display, BehaviorState
 import rclpy
 from rclpy.node import Node
 import time
 import RPi.GPIO as GPIO
 import random
+from resizeimage import resizeimage  # library for image resizing
+from PIL import Image, ImageDraw, ImageFont # library for image manip.
 
 class SampleControllerAsync(Node):
 
