@@ -53,7 +53,7 @@ class SampleControllerAsync(Node):
         if self.phase == 0:
             new_move = random.randint(0, 2)
             self.sensor_stack.append(new_move)
-            print("Added move " + new_move)
+            print("Added move ", new_move)
             self.phase = 1
             self.idx = 0
 
