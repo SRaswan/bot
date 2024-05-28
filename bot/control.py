@@ -24,12 +24,12 @@ class SampleControllerAsync(Node):
         self.timer = self.create_timer(1.0, self.pupper)
 
 
-    async def send_move_request(self, idx):
+    def send_move_request(self, idx):
         move_commands = ["move_forward", "move_right", "move_left"]
         self.req = GoPupper.Request()
         self.req.command = move_commands[idx]
         self.future = self.cli.call_async(self.req)
-        await self.future
+        rclpy.spin_until_future_complete(self, self.future, 0.5)
         return self.future.result()
 
     def get_user_input(self):
@@ -44,7 +44,7 @@ class SampleControllerAsync(Node):
             return 2
         return -1
 
-    async def pupper(self):
+    def pupper(self):
         print("Phase ", self.phase)
         # Phase 0: Choosing move
         if self.phase == 0:
@@ -58,7 +58,7 @@ class SampleControllerAsync(Node):
         if self.phase == 1:
             print("Dancing")
             if self.idx < len(self.sensor_stack):
-                await self.send_move_request(self.sensor_stack[self.idx])
+                self.send_move_request(self.sensor_stack[self.idx])
                 self.idx += 1
                 self.phase = 1
             else:
