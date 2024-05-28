@@ -44,7 +44,7 @@ class SampleControllerAsync(Node):
         return -1
 
     def pupper(self):
-        print("Phase ", phase)
+        print("Phase ", self.phase)
         # Phase 0: Choosing move
         if self.phase == 0:
             new_move = random.randint(0, 2)
