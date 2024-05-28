@@ -30,7 +30,7 @@ class SampleControllerAsync(Node):
         self.req.command = move_commands[idx]
         self.future = self.cli.call_async(self.req)
         # rclpy.spin_until_future_complete(self, self.future, 0.5)
-        rclpy.spin_once(self, self.future)
+        # rclpy.spin_once(self, self.future)
         return self.future.result()
 
     def get_user_input(self):
