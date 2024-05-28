@@ -29,10 +29,8 @@ class SampleControllerAsync(Node):
         self.req = GoPupper.Request()
         self.req.command = move_commands[idx]
         self.future = self.cli.call_async(self.req)
-        # rclpy.spin_until_future_complete(self, self.future)
-        while rclpy.ok() and not self.future.done():
-            rclpy.spin_once(self)
-            time.sleep(0.1) 
+        # rclpy.spin_until_future_complete(self, self.future, 0.5)
+        rclpy.spin_once(self, self.future)
         return self.future.result()
 
     def get_user_input(self):
