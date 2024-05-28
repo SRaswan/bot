@@ -42,7 +42,6 @@ class echo_camera(Node):
 		red_masked_frame = cv2.bitwise_and(current_frame, current_frame, mask=red_mask)
 		green_masked_frame = cv2.bitwise_and(current_frame, current_frame, mask=green_mask)
 
-
 		#If blue showing at all, we keep moving in a circle
 		if blue_masked_frame.any() > 0:
 			msg.linear.x = 2.0

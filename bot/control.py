@@ -14,6 +14,10 @@ class SampleControllerAsync(Node):
         super().__init__('sample_controller')
         self.cli = self.create_client(GoPupper, 'pup_command')
 
+		
+		self.subscription
+		self.br = CvBridge()
+
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
         
@@ -21,6 +25,7 @@ class SampleControllerAsync(Node):
         self.sensor_stack = []
         self.idx = 0
         self.phase = 0
+        self.score = 0
         self.timer = self.create_timer(1.0, self.pupper)
 
 
@@ -29,8 +34,7 @@ class SampleControllerAsync(Node):
         self.req = GoPupper.Request()
         self.req.command = move_commands[idx]
         self.future = self.cli.call_async(self.req)
-        # rclpy.spin_until_future_complete(self, self.future, 0.5)
-        # rclpy.spin_once(self, self.future)
+        # rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
 
     def get_user_input(self):
@@ -45,7 +49,7 @@ class SampleControllerAsync(Node):
             return 2
         return -1
 
-    def pupper(self):
+    def pupper(self, data):
         print("Phase ", self.phase)
         # Phase 0: Choosing move
         if self.phase == 0:
@@ -73,6 +77,7 @@ class SampleControllerAsync(Node):
             if response != -1:
                 if response == self.sensor_stack[self.idx]:
                     self.idx += 1
+                    self.score += 1
                     print("Nice! Keep going")
                     if self.idx >= len(self.sensor_stack):
                         print("Correct! Moving to the next level.")
@@ -81,6 +86,22 @@ class SampleControllerAsync(Node):
                     print("You failed! Try again.")
                     self.sensor_stack = []
                     self.phase = 3
+
+        # Phase 3: Picture
+        if self.phase == 3:
+            print("Picture")
+            self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.pupper, 10)
+            current_frame = self.br.imgmsg_to_cv2(data)
+            disp = Display()
+            imgFile = Image.open("img/pic.jpg")
+            width_size = (MAX_WIDTH / float(imgFile.size[0]))
+            imgFile = resizeimage.resize_width(imgFile, MAX_WIDTH)
+
+            imgFile.save(imgFile, imgFile.format)
+
+            disp.show_image(newFileLoc)
+
+
 
 def main():
     GPIO.setmode(GPIO.BCM)
