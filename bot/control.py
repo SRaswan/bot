@@ -16,7 +16,7 @@ class SampleControllerAsync(Node):
 
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
-
+        
         self.req = GoPupper.Request()
         self.sensor_stack = []
         self.idx = 0
@@ -26,6 +26,7 @@ class SampleControllerAsync(Node):
 
     def send_move_request(self, idx):
         move_commands = ["move_forward", "move_right", "move_left"]
+        self.req = GoPupper.Request()
         self.req.command = move_commands[idx]
         self.future = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future)
