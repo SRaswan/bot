@@ -44,7 +44,7 @@ class SampleControllerAsync(Node):
             return 2
         return -1
 
-    def pupper(self):
+    async def pupper(self):
         print("Phase ", self.phase)
         # Phase 0: Choosing move
         if self.phase == 0:
@@ -58,7 +58,7 @@ class SampleControllerAsync(Node):
         if self.phase == 1:
             print("Dancing")
             if self.idx < len(self.sensor_stack):
-                self.send_move_request(self.sensor_stack[self.idx])
+                await self.send_move_request(self.sensor_stack[self.idx])
                 self.idx += 1
                 self.phase = 1
             else:
@@ -75,7 +75,6 @@ class SampleControllerAsync(Node):
                     print("Nice! Keep going")
                     if self.idx >= len(self.sensor_stack):
                         print("Correct! Moving to the next level.")
-                        self.send_move_request(self.sensor_stack[-1])
                         self.phase = 0
                 else:
                     print("You failed! Try again.")
