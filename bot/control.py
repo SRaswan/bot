@@ -43,12 +43,8 @@ class SampleControllerAsync(Node):
             return 2
         return -1
 
-    def perform_sensor_stack_moves(self):
-        for move in self.sensor_stack:
-            self.send_move_request(move)
-            time.sleep(1)
-
     def pupper(self):
+        print("Phase ", phase)
         # Phase 0: Choosing move
         if self.phase == 0:
             new_move = random.randint(0, 2)
@@ -63,6 +59,8 @@ class SampleControllerAsync(Node):
             if self.idx < len(self.sensor_stack):
                 self.send_move_request(self.sensor_stack[self.idx])
                 self.idx += 1
+                self.phase = 1
+                print(self.sensor_stack)
             else:
                 self.phase = 2
                 self.idx = 0
