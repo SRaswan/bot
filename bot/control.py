@@ -8,14 +8,16 @@ import random
 from resizeimage import resizeimage  # library for image resizing
 from PIL import Image, ImageDraw, ImageFont # library for image manip.
 
+RELATIVE = "/home/ubuntu/ros2_ws/src/lab2task4/lab2task4/img/"
+MOVES = ["move_forward", "move_right", "move_left"]
+
 class SampleControllerAsync(Node):
 
     def __init__(self):
         super().__init__('sample_controller')
         self.cli = self.create_client(GoPupper, 'pup_command')
+        self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.pupper, 10)
 
-		
-		self.subscription
 		self.br = CvBridge()
 
         while not self.cli.wait_for_service(timeout_sec=1.0):
@@ -28,11 +30,9 @@ class SampleControllerAsync(Node):
         self.score = 0
         self.timer = self.create_timer(1.0, self.pupper)
 
-
     def send_move_request(self, idx):
-        move_commands = ["move_forward", "move_right", "move_left"]
         self.req = GoPupper.Request()
-        self.req.command = move_commands[idx]
+        self.req.command = MOVES[idx]
         self.future = self.cli.call_async(self.req)
         # rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
@@ -78,6 +78,8 @@ class SampleControllerAsync(Node):
                 if response == self.sensor_stack[self.idx]:
                     self.idx += 1
                     self.score += 1
+                    self.display(MOVES[response])
+
                     print("Nice! Keep going")
                     if self.idx >= len(self.sensor_stack):
                         print("Correct! Moving to the next level.")
@@ -90,17 +92,19 @@ class SampleControllerAsync(Node):
         # Phase 3: Picture
         if self.phase == 3:
             print("Picture")
-            self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.pupper, 10)
             current_frame = self.br.imgmsg_to_cv2(data)
-            disp = Display()
-            imgFile = Image.open("img/pic.jpg")
-            width_size = (MAX_WIDTH / float(imgFile.size[0]))
-            imgFile = resizeimage.resize_width(imgFile, MAX_WIDTH)
+            cv2.imwrite(RELATIVE+"pic.jpg", current_frame)
+            self.display("pic.jpg")
 
-            imgFile.save(imgFile, imgFile.format)
-
-            disp.show_image(newFileLoc)
-
+    def display(self, pic):
+        impath = RELATIVE+pic
+        disp = Display()
+        imgFile = Image.open(impath)
+        width_size = (320 / float(imgFile.size[0]))
+        imgFile = resizeimage.resize_width(imgFile, 320)
+        imgFile.save(impath, imgFile.format)
+        disp.show_image(impath)
+        imgFile.close()
 
 
 def main():
