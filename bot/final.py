@@ -17,8 +17,8 @@ class SampleControllerAsync(Node):
         super().__init__('sample_controller')
         self.cli = self.create_client(GoPupper, 'pup_command')
         self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.pupper, 10)
-
-		self.br = CvBridge()
+        
+        self.br = CvBridge()
 
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
@@ -126,7 +126,7 @@ class SampleControllerAsync(Node):
                 if self.idx >= len(self.sensor_stack):
                     print("Correct! Moving to the next level.")
                     self.phase = 3
-            else if cv2.countNonZero(blue_masked_frame) > 15 or cv2.countNonZero(red_masked_frame) > 15 or cv2.countNonZero(green_masked_frame) > 15:
+            elif cv2.countNonZero(blue_masked_frame) > 15 or cv2.countNonZero(red_masked_frame) > 15 or cv2.countNonZero(green_masked_frame) > 15:
                 print("You failed! Try again.")
                 self.sensor_stack = []
                 self.phase = 6
