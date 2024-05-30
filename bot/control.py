@@ -18,10 +18,10 @@ class SampleControllerAsync(Node):
     def __init__(self):
         super().__init__('sample_controller')
         self.cli = self.create_client(GoPupper, 'pup_command')
-        # self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', ........, 10)
+        self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 10)
 		
-        # self.subscription
-
+        self.subscription
+        self.current_frame = None
         self.br = CvBridge()
 
         while not self.cli.wait_for_service(timeout_sec=1.0):
@@ -52,6 +52,9 @@ class SampleControllerAsync(Node):
         elif not tLeft:
             return 2
         return -1
+
+    def cam(self, data):
+        self.current_frame = self.br.imgmsg_to_cv2(data)
 
     def pupper(self):
         print("Phase ", self.phase)
@@ -94,11 +97,10 @@ class SampleControllerAsync(Node):
                     self.phase = 3
 
         # Phase 3: Picture
-        # if self.phase == 3:
-        #     print("Picture")
-        #     current_frame = self.br.imgmsg_to_cv2(data)
-        #     cv2.imwrite(RELATIVE+"pic.jpg", current_frame)
-        #     self.display("pic.jpg")
+        if self.phase == 3:
+            print("Picture")
+            cv2.imwrite(RELATIVE+"pic.jpg", self.current_frame)
+            self.display("pic.jpg")
 
     def display(self, pic):
         impath = RELATIVE+pic
