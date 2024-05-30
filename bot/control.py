@@ -17,9 +17,9 @@ class SampleControllerAsync(Node):
     def __init__(self):
         super().__init__('sample_controller')
         self.cli = self.create_client(GoPupper, 'pup_command')
-        self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.echo_topic, 10)
+        # self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.echo_topic, 10)
 		
-        self.subscription
+        # self.subscription
 
         self.br = CvBridge()
 
@@ -51,19 +51,6 @@ class SampleControllerAsync(Node):
         elif not tLeft:
             return 2
         return -1
-
-    def echo_topic(self, data):
-		#Logging a message - helps with debugging later on
-        self.get_logger().info('Receiving video frame')
-		
-		#Using the CvBridge function imgmsg_to_cv to convert ROS Image to OpenCV image. Now you can use this image to do other OpenCV things
-        current_frame = self.br.imgmsg_to_cv2(data)
-		
-		#Using the imshow function to echo display the image frame currrently being published by the OAK-D
-        cv2.imshow("camera", current_frame)
-
-		#This shows each image frame for 1 millisecond, try playing around with different wait values to achieve the video framerate you want!
-        cv2.waitKey(1)
 
     def pupper(self, data):
         print("Phase ", self.phase)
