@@ -5,6 +5,7 @@ from rclpy.node import Node
 import time
 import RPi.GPIO as GPIO
 import random
+import cv2
 from resizeimage import resizeimage  # library for image resizing
 from PIL import Image, ImageDraw, ImageFont # library for image manip.
 
@@ -18,7 +19,7 @@ class SampleControllerAsync(Node):
         self.cli = self.create_client(GoPupper, 'pup_command')
         self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.pupper, 10)
 
-		self.br = CvBridge()
+        self.br = CvBridge()
 
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
