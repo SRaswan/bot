@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': ['service = bot.sense:main',
                             'client = bot.client:main',
-                            'salsa = bot.control:main',
+                            'salsa = bot.control:main'
+                            'cam = bot.echo_camera:main',
         ],
     },
 )    
