@@ -91,11 +91,11 @@ class SampleControllerAsync(Node):
                     self.phase = 3
 
         # Phase 3: Picture
-        if self.phase == 3:
-            print("Picture")
-            current_frame = self.br.imgmsg_to_cv2(data)
-            cv2.imwrite(RELATIVE+"pic.jpg", current_frame)
-            self.display("pic.jpg")
+        # if self.phase == 3:
+        #     print("Picture")
+        #     current_frame = self.br.imgmsg_to_cv2(data)
+        #     cv2.imwrite(RELATIVE+"pic.jpg", current_frame)
+        #     self.display("pic.jpg")
 
     def display(self, pic):
         impath = RELATIVE+pic

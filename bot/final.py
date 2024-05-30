@@ -5,6 +5,7 @@ from rclpy.node import Node
 import time
 import RPi.GPIO as GPIO
 import random
+import cv2
 from resizeimage import resizeimage  # library for image resizing
 from PIL import Image, ImageDraw, ImageFont # library for image manip.
 
@@ -51,7 +52,7 @@ class SampleControllerAsync(Node):
 
     def pupper(self, data):
         print("Phase ", self.phase)
-        # Phase 0: Choosing move
+        # Phase 0: Pick Move
         if self.phase == 0:
             print("Pick Move")
             new_move = random.randint(0, 2)
@@ -60,7 +61,7 @@ class SampleControllerAsync(Node):
             self.phase = 1
             self.idx = 0
 
-        # Phase 1: Choosing move
+        # Phase 1: Dancing
         if self.phase == 1:
             print("Dancing")
             if self.idx < len(self.sensor_stack):
@@ -88,6 +89,7 @@ class SampleControllerAsync(Node):
                     self.sensor_stack = []
                     self.phase = 3
     
+        # Phase 3: Pick Color
         if self.phase == 3:
             print("Pick Color")
             new_color = random.randint(0, 2)
@@ -96,6 +98,7 @@ class SampleControllerAsync(Node):
             self.phase = 4
             self.idx = 0
         
+        # Phase 3: Show Color
         if self.phase == 4:
             print("Show Color")
             if self.idx < len(self.sensor_stack):
@@ -105,6 +108,7 @@ class SampleControllerAsync(Node):
                 self.phase = 5
                 self.idx = 0
 
+        # Phase 3: Viewing Colors
         if self.phase == 5:
             print("Response")
             current_frame = self.br.imgmsg_to_cv2(data)
@@ -131,12 +135,31 @@ class SampleControllerAsync(Node):
                 self.sensor_stack = []
                 self.phase = 6
 
-        # Phase 3: Picture
+        # Phase 6: Picture
         if self.phase == 6:
             print("Picture")
             current_frame = self.br.imgmsg_to_cv2(data)
             cv2.imwrite(RELATIVE+"pic.jpg", current_frame)
             self.display("pic.jpg")
+            self.phase =7
+
+        # Phase 2: Sensing
+        if self.phase == 2:
+            print("Response")
+            response = self.get_user_input()
+            if response != -1:
+                if response == self.sensor_stack[self.idx]:
+                    self.idx += 1
+                    self.score += 1
+                    self.display(MOVES[response])
+                    print("Nice! Keep going")
+                    if self.idx >= len(self.sensor_stack):
+                        print("Correct! Moving to the next level.")
+                        self.phase = 0
+                else:
+                    print("You failed! Try again.")
+                    self.sensor_stack = []
+                    self.phase = 3
 
     def display(self, pic):
         impath = RELATIVE+pic
