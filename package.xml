@@ -9,6 +9,7 @@
 
 <depend>cv2</depend>
 <depend>cv_bridge</depend>
+<depend>sensor_msgs.msg</depend>
 
   <depend>rclpy</depend>
   <depend>RPi.GPIO</depend>

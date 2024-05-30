@@ -9,6 +9,7 @@ import cv2
 from cv_bridge import CvBridge
 from resizeimage import resizeimage
 from PIL import Image, ImageDraw, ImageFont
+from sensor_msgs.msg import Image
 
 RELATIVE = "/home/ubuntu/ros2_ws/src/lab2task4/lab2task4/img/"
 MOVES = ["move_forward", "move_right", "move_left"]

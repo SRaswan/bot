@@ -8,6 +8,8 @@ import random
 import cv2
 from resizeimage import resizeimage  # library for image resizing
 from PIL import Image, ImageDraw, ImageFont # library for image manip.
+from sensor_msgs.msg import Image
+
 
 RELATIVE = "/home/ubuntu/ros2_ws/src/lab2task4/lab2task4/img/"
 MOVES = ["move_forward", "move_right", "move_left"]
