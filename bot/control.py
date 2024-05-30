@@ -18,6 +18,8 @@ class SampleControllerAsync(Node):
         super().__init__('sample_controller')
         self.cli = self.create_client(GoPupper, 'pup_command')
         self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.pupper, 10)
+		
+        self.subscription
 
         self.br = CvBridge()
 
