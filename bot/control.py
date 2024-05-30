@@ -7,8 +7,8 @@ import RPi.GPIO as GPIO
 import random
 import cv2
 from cv_bridge import CvBridge
-from resizeimage import resizeimage  # library for image resizing
-from PIL import Image, ImageDraw, ImageFont # library for image manip.
+from resizeimage import resizeimage
+from PIL import Image, ImageDraw, ImageFont
 
 RELATIVE = "/home/ubuntu/ros2_ws/src/lab2task4/lab2task4/img/"
 MOVES = ["move_forward", "move_right", "move_left"]
@@ -18,7 +18,7 @@ class SampleControllerAsync(Node):
     def __init__(self):
         super().__init__('sample_controller')
         self.cli = self.create_client(GoPupper, 'pup_command')
-        # self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.pupper, 10)
+        # self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', ........, 10)
 		
         # self.subscription
 
@@ -53,7 +53,7 @@ class SampleControllerAsync(Node):
             return 2
         return -1
 
-    def pupper(self, data):
+    def pupper(self):
         print("Phase ", self.phase)
         # Phase 0: Choosing move
         if self.phase == 0:
