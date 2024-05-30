@@ -6,6 +6,7 @@ import time
 import RPi.GPIO as GPIO
 import random
 import cv2
+from cv_bridge import CvBridge
 from resizeimage import resizeimage  # library for image resizing
 from PIL import Image, ImageDraw, ImageFont # library for image manip.
 
