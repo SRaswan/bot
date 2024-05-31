@@ -145,29 +145,11 @@ class SampleControllerAsync(Node):
             self.display("pic.jpg")
             self.phase =7
 
-        # Phase 2: Sensing
-        if self.phase == 2:
-            print("Response")
-            response = self.get_user_input()
-            if response != -1:
-                if response == self.sensor_stack[self.idx]:
-                    self.idx += 1
-                    self.score += 1
-                    self.display(MOVES[response])
-                    print("Nice! Keep going")
-                    if self.idx >= len(self.sensor_stack):
-                        print("Correct! Moving to the next level.")
-                        self.phase = 0
-                else:
-                    print("You failed! Try again.")
-                    self.sensor_stack = []
-                    self.phase = 3
 
     def display(self, pic):
         impath = RELATIVE+pic
         disp = Display()
         imgFile = Image.open(impath)
-        width_size = (320 / float(imgFile.size[0]))
         imgFile = resizeimage.resize_width(imgFile, 320)
         imgFile.save(impath, imgFile.format)
         disp.show_image(impath)

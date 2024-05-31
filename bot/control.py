@@ -13,15 +13,15 @@ from sensor_msgs.msg import Image
 
 RELATIVE = "/home/ubuntu/ros2_ws/src/lab2task4/lab2task4/img/"
 MOVES = ["move_forward", "move_right", "move_left"]
+COLORS = ["red", "green", "blue"]
 
 class SampleControllerAsync(Node):
 
     def __init__(self):
         super().__init__('sample_controller')
         self.cli = self.create_client(GoPupper, 'pup_command')
-        self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 10)
 		
-        self.subscription
+        self.subscription = None
         self.current_frame = None
         self.br = CvBridge()
 
@@ -97,17 +97,68 @@ class SampleControllerAsync(Node):
                     self.sensor_stack = []
                     self.phase = 3
 
-        # Phase 3: Picture
+        # Phase 3: Start cam
         if self.phase == 3:
+            self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 10)
+            self.phase = 4
+
+        # Phase 4: Pick Color
+        if self.phase == 4:
+            print("Pick Color")
+            new_color = random.randint(0, 2)
+            self.sensor_stack.append(new_color)
+            print("Added color ", new_color)
+            self.phase = 5
+            self.idx = 0
+        
+        # Phase 5: Show Color
+        if self.phase == 5:
+            print("Show Color")
+            if self.idx < len(self.sensor_stack):
+                self.display(COLORS[self.sensor_stack[self.idx]])
+                self.idx += 1
+            else:
+                self.phase = 6
+                self.idx = 0
+
+        # Phase 6: Viewing Colors
+        if self.phase == 6:
+            print("Response")
+            hsv = cv2.cvtColor(self.current_frame, cv2.COLOR_BGR2HSV)
+
+            blue_mask = cv2.inRange(hsv, (55, 50, 50), (130, 255, 255))
+            red_mask = cv2.inRange(hsv, (160, 50, 50), (180, 255, 255))
+            green_mask = cv2.inRange(hsv, (35, 50, 50), (85, 255, 255))
+
+            blue_masked_frame = cv2.bitwise_and(self.current_frame, self.current_frame, mask=blue_mask)
+            red_masked_frame = cv2.bitwise_and(self.current_frame, self.current_frame, mask=red_mask)
+            green_masked_frame = cv2.bitwise_and(self.current_frame, self.current_frame, mask=green_mask)       
+            cols = [blue_masked_frame, red_masked_frame, green_masked_frame]
+
+            if cv2.countNonZero(cols[self.sensor_stack[self.idx]]) > 15:
+                self.idx += 1
+                self.score += 1
+                print("Nice! Keep going")
+                if self.idx >= len(self.sensor_stack):
+                    print("Correct! Moving to the next level.")
+                    self.phase = 3
+            elif cv2.countNonZero(blue_masked_frame) > 15 or cv2.countNonZero(red_masked_frame) > 15 or cv2.countNonZero(green_masked_frame) > 15:
+                print("You failed! Try again.")
+                self.sensor_stack = []
+                self.phase = 7
+
+        # Phase 7: Picture
+        if self.phase == 7:
             print("Picture")
             cv2.imwrite(RELATIVE+"pic.jpg", self.current_frame)
             self.display("pic.jpg")
+            self.phase = 8
+
 
     def display(self, pic):
         impath = RELATIVE+pic
         disp = Display()
         imgFile = Image.open(impath)
-        width_size = (320 / float(imgFile.size[0]))
         imgFile = resizeimage.resize_width(imgFile, 320)
         imgFile.save(impath, imgFile.format)
         disp.show_image(impath)
