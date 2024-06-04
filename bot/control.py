@@ -173,7 +173,7 @@ class SampleControllerAsync(Node):
         # except Exception as e:
         #     print("Error: ", e)
 
-        imgFile = Image.open(impath)
+        imgFile = PILImage.open(impath)
         imgFile = resizeimage.resize_width(imgFile, 320)
         imgFile.save(impath, imgFile.format)
         disp.show_image(impath)
