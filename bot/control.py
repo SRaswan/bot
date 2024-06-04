@@ -518,20 +518,21 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         time.sleep(2)  # Display the image for half a second
 
     def display_custom_message(self, message, background_color):  # Method to display custom messages with background color
-        img = PILImage.new('RGB', (320, 240), color=background_color)  # Create a blank image with the given background color
-        d = ImageDraw.Draw(img)  # Initialize the drawing context
-        font_size = self.get_optimal_font_size(message)  # Get optimal font size
-        font = ImageFont.truetype(FONT_PATH, font_size)  # Load the arial.ttf font with optimal size
-        lines = self.wrap_text(message, font, 300)  # Wrap text to fit within the screen width
-        y_text = 10
-        for line in lines:
-            width, height = d.textsize(line, font=font)
-            d.text(((320 - width) / 2, y_text), line, font=font, fill=(255, 255, 255))
-            y_text += height
-        img_path = RELATIVE + 'custom_message.jpg'
-        img.save(img_path)  # Save the image
-        self.disp.show_image(img_path)  # Display the image
-        time.sleep(2)  # Display the image for half a second
+	    img = PILImage.new('RGB', (320, 240), color=background_color)  # Create a blank image with the given background color
+	    d = ImageDraw.Draw(img)  # Initialize the drawing context
+	    font_size = self.get_optimal_font_size(message)  # Get optimal font size
+	    font = ImageFont.truetype(FONT_PATH, font_size)  # Load the arial.ttf font with optimal size
+	    lines = self.wrap_text(message, font, 300)  # Wrap text to fit within the screen width
+	    y_text = 10
+	    for line in lines:
+	        width, height = d.textsize(line, font=font)
+	        d.text(((320 - width) / 2, y_text), line, font=font, fill=(255, 255, 255))
+	        y_text += height
+	    img_path = RELATIVE + 'custom_message.jpg'
+	    img.save(img_path)  # Save the image
+	    self.disp.show_image(img_path)  # Display the image
+	    time.sleep(0.5)  # Display the image for half a second
+
 
     def get_optimal_font_size(self, text, max_width=320, max_height=240):
         font_size = 50  # Start with a large font size
@@ -569,9 +570,10 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                 file.write(f'{score}\n')
 
     def display_leaderboard(self):  # Method to display the leaderboard
-        sorted_scores = sorted(self.scores, reverse=True)[:5]  # Get the top 5 scores
-        leaderboard_message = 'Leaderboard:\n' + '\n'.join([f'{i + 1}. {score}' for i, score in enumerate(sorted_scores)])
-        self.display_custom_message(leaderboard_message, "black")
+	    sorted_scores = sorted(self.scores, reverse=True)[:5]  # Get the top 5 scores
+	    leaderboard_message = 'Leaderboard:\n' + '\n'.join([f'{i + 1}. {score}' for i, score in enumerate(sorted_scores)])
+	    self.display_custom_message(leaderboard_message, "black")
+
 
     def display(self, pic):  # Method to display an image
         impath = RELATIVE + pic  # Define the image path
