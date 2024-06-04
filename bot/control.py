@@ -503,7 +503,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         img_path = RELATIVE + f'selection_{selection}.jpg'  # Define the image path
         img = PILImage.new('RGB', (320, 240), color=(0, 0, 0))  # Create a blank image
         d = ImageDraw.Draw(img)  # Initialize the drawing context
-        font = ImageFont.truetype("arial.ttf", 50)  # Load a larger font
+        font = ImageFont.truetype(RELATIVE+"arial.ttf", 50)  # Load a larger font
         move_text = MOVES[selection]  # Get the text for the selected move
         d.text((10, 10), f'You selected: {move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
         img.save(img_path)  # Save the image
