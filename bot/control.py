@@ -242,6 +242,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         self.req = GoPupper.Request()  # Create a new request object
         self.req.command = MOVES[idx]  # Set the command in the request object
         self.future = self.cli.call_async(self.req)  # Call the service asynchronously
+        rcply.spin_until_future_complete(self, self.future)  # Wait until the service call is complete
         return self.future.result()  # Return the result of the service call
 
     def get_user_input(self):  # Method to get user input from GPIO
