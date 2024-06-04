@@ -212,7 +212,7 @@ from resizeimage import resizeimage  # Import resizeimage to resize images
 from PIL import Image, ImageDraw, ImageFont  # Import PIL for image handling
 from sensor_msgs.msg import Image  # Import ROS Image message type
 
-RELATIVE = "/home/ubuntu/ros2_ws/src/lab2task4/lab2task4/img/"  # Define the relative path for images
+RELATIVE = "/home/ubuntu/ros2_ws/src/bot/bot/img/"  # Define the relative path for images
 MOVES = ["move_forward", "move_right", "move_left"]  # List of possible movement commands
 COLORS = ["red", "green", "blue"]  # List of colors for display purposes
 
