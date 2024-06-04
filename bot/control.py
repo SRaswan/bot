@@ -480,8 +480,10 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                     self.display_leaderboard()  # Display the leaderboard
                     self.phase = 3  # Move to phase 3 (end game)
 
-        elif self.phase == 3:  # Phase 3: Waiting to play again
-            print("Phase 3: Waiting to play again")  # Log the phase
+        elif self.phase == 3:  # Phase 3: Displaying leaderboard and waiting to play again
+            print("Phase 3: Displaying leaderboard and waiting to play again")  # Log the phase
+            self.display_leaderboard()  # Display the leaderboard
+            time.sleep(5)  # Display the leaderboard for 5 seconds
             self.display_custom_message("Touch sensor to play again", "black")
             response = self.get_user_input()  # Get user input to play again
             if response != -1:  # If a sensor is touched
@@ -508,22 +510,48 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         img_path = RELATIVE + f'selection_{selection}.jpg'  # Define the image path
         img = PILImage.new('RGB', (320, 240), color="black")  # Create a blank image
         d = ImageDraw.Draw(img)  # Initialize the drawing context
-        font = ImageFont.truetype(FONT_PATH, 50)  # Load the arial.ttf font
+        font = ImageFont.truetype(FONT_PATH, 30)  # Load the arial.ttf font with a smaller size
         move_text = MOVES[selection]  # Get the text for the selected move
         d.text((10, 10), f'You selected: {move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
         img.save(img_path)  # Save the image
         self.disp.show_image(img_path)  # Display the image
-        time.sleep(0.5)  # Display the image for half a second
+        time.sleep(2)  # Display the image for half a second
 
     def display_custom_message(self, message, background_color):  # Method to display custom messages with background color
         img = PILImage.new('RGB', (320, 240), color=background_color)  # Create a blank image with the given background color
         d = ImageDraw.Draw(img)  # Initialize the drawing context
-        font = ImageFont.truetype(FONT_PATH, 50)  # Load the arial.ttf font
-        d.text((10, 80), message, font=font, fill=(255, 255, 255))  # Draw the custom message on the image
+        font_size = self.get_optimal_font_size(message)  # Get optimal font size
+        font = ImageFont.truetype(FONT_PATH, font_size)  # Load the arial.ttf font with optimal size
+        lines = self.wrap_text(message, font, 300)  # Wrap text to fit within the screen width
+        y_text = 10
+        for line in lines:
+            width, height = d.textsize(line, font=font)
+            d.text(((320 - width) / 2, y_text), line, font=font, fill=(255, 255, 255))
+            y_text += height
         img_path = RELATIVE + 'custom_message.jpg'
         img.save(img_path)  # Save the image
         self.disp.show_image(img_path)  # Display the image
-        time.sleep(0.5)  # Display the image for half a second
+        time.sleep(2)  # Display the image for half a second
+
+    def get_optimal_font_size(self, text, max_width=320, max_height=240):
+        font_size = 50  # Start with a large font size
+        font = ImageFont.truetype(FONT_PATH, font_size)
+        width, height = font.getsize(text)
+        while width > max_width or height > max_height:
+            font_size -= 1
+            font = ImageFont.truetype(FONT_PATH, font_size)
+            width, height = font.getsize(text)
+        return font_size
+
+    def wrap_text(self, text, font, max_width):
+        lines = []
+        words = text.split()
+        while words:
+            line = ''
+            while words and font.getsize(line + words[0])[0] <= max_width:
+                line = line + (words.pop(0) + ' ')
+            lines.append(line.strip())
+        return lines
 
     def display_score(self):  # Method to display the user's score
         self.display_custom_message(f'Your Score: {self.score}', "black")
