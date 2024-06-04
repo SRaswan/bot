@@ -292,7 +292,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                     print("Nice! Keep going")  # Log the success
                     if self.idx >= len(self.sensor_stack):  # If all moves are matched
                         print("Correct! Moving to the next level.")  # Log the success
-                        self.phase = 3  # Move to phase 3
+                        self.phase = 0  # Move to phase 0
                         self.idx = 0  # Reset the index for the next phase
                 else:
                     print("You failed! Try again.")  # Log the failure
