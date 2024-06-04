@@ -159,13 +159,23 @@ class SampleControllerAsync(Node):
         impath = RELATIVE+pic
         disp = Display()
         print("Displaying: ", impath)
-        img = Image.new('RGB', (100, 100))
-        print("PIL imported successfully, and Image object created.")
-        # with Image.open(impath) as imgFile:
-        #     imgFile = resizeimage.resize_width(imgFile, 320)
-        #     imgFile.save(impath, imgFile.format)
-        disp.show_image(img)
-        # img.close()
+
+        try:
+            img = cv2.imread(impath)
+            if img is None:
+                raise FileNotFoundError("Image not found at path: ", impath)
+            img = cv2.resize(img, (320, 240))
+            cv2.imwrite(impath, img)
+            disp.show_image(impath)
+        except Exception as e:
+            print("Error: ", e)
+        
+
+        # # with Image.open(impath) as imgFile:
+        # #     imgFile = resizeimage.resize_width(imgFile, 320)
+        # #     imgFile.save(impath, imgFile.format)
+        # disp.show_image(img)
+        # # img.close()
 
 
 def main():
