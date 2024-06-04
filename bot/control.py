@@ -386,7 +386,7 @@ RELATIVE = "/home/ubuntu/ros2_ws/src/bot/bot/img/"  # Define the relative path f
 MOVES = ["move_forward", "move_right", "move_left"]  # List of possible movement commands
 COLORS = ["red", "green", "blue"]  # List of colors for display purposes
 LEADERBOARD_FILE = RELATIVE + "leaderboard.txt"  # File to store leaderboard scores
-FONT_PATH = "./arial.ttf"  # Path to the arial.ttf font file
+FONT_PATH = RELATIVE+"arial.ttf"  # Path to the arial.ttf font file
 
 class SampleControllerAsync(Node):  # Define the main class for the ROS node
 
