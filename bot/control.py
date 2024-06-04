@@ -386,6 +386,7 @@ RELATIVE = "/home/ubuntu/ros2_ws/src/bot/bot/img/"  # Define the relative path f
 MOVES = ["move_forward", "move_right", "move_left"]  # List of possible movement commands
 COLORS = ["red", "green", "blue"]  # List of colors for display purposes
 LEADERBOARD_FILE = RELATIVE + "leaderboard.txt"  # File to store leaderboard scores
+FONT_PATH = "./arial.ttf"  # Path to the arial.ttf font file
 
 class SampleControllerAsync(Node):  # Define the main class for the ROS node
 
@@ -464,14 +465,14 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                 if self.user_input_stack == self.sensor_stack[:len(self.user_input_stack)]:  # Check if user input matches the sensor stack up to this point
                     if len(self.user_input_stack) == len(self.sensor_stack):  # If the entire sequence is matched
                         self.score += 1  # Increment the score
-                        self.display_custom_message("Correct! Moving \n to the next level.")
+                        self.display_custom_message("Correct! Moving to the next level.", "green")
                         print("Correct! Moving to the next level.")  # Log the success
                         self.phase = 0  # Move to phase 0
                     else:
-                        self.display_custom_message("Nice! \n Keep going")
+                        self.display_custom_message("Nice! Keep going", "black")
                         print("Nice! Keep going")  # Log partial success
                 else:
-                    self.display_custom_message("You failed! \n Try again.")
+                    self.display_custom_message("You failed! Try again.", "red")
                     print("You failed! Try again.")  # Log the failure
                     self.scores.append(self.score)  # Save the score
                     self.save_scores()  # Save scores to file
@@ -481,7 +482,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
 
         elif self.phase == 3:  # Phase 3: Waiting to play again
             print("Phase 3: Waiting to play again")  # Log the phase
-            self.display_custom_message("Touch sensor to play again")
+            self.display_custom_message("Touch sensor to play again", "black")
             response = self.get_user_input()  # Get user input to play again
             if response != -1:  # If a sensor is touched
                 self.score = 0  # Reset the score
@@ -491,36 +492,41 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
     def display_phase_message(self):  # Method to display phase messages on the screen
         if self.phase in [0, 1]:
             message = "Robot's Turn"
+            color = "black"
         elif self.phase == 2:
             message = "Your Turn"
+            color = "black"
         elif self.phase == 3:
             message = "Next Level"
+            color = "black"
         else:
             message = ""
-        self.display_custom_message(message)
+            color = "black"
+        self.display_custom_message(message, color)
 
     def display_user_selection(self, selection):  # Method to display user selection
         img_path = RELATIVE + f'selection_{selection}.jpg'  # Define the image path
-        img = PILImage.new('RGB', (320, 240), color=(0, 0, 0))  # Create a blank image
+        img = PILImage.new('RGB', (320, 240), color="black")  # Create a blank image
         d = ImageDraw.Draw(img)  # Initialize the drawing context
-        font = ImageFont.truetype(RELATIVE+"arial.ttf", 50)  # Load a larger font
+        font = ImageFont.truetype(FONT_PATH, 50)  # Load the arial.ttf font
         move_text = MOVES[selection]  # Get the text for the selected move
-        d.text((10, 10), f'You selected: \n{move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
+        d.text((10, 10), f'You selected: {move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
         img.save(img_path)  # Save the image
         self.disp.show_image(img_path)  # Display the image
         time.sleep(0.5)  # Display the image for half a second
 
-    def display_custom_message(self, message):  # Method to display custom messages
-        img = PILImage.new('RGB', (320, 240), color=(0, 0, 0))  # Create a blank image
+    def display_custom_message(self, message, background_color):  # Method to display custom messages with background color
+        img = PILImage.new('RGB', (320, 240), color=background_color)  # Create a blank image with the given background color
         d = ImageDraw.Draw(img)  # Initialize the drawing context
-        font = ImageFont.truetype(RELATIVE+"arial.ttf", 50)  # Load a larger font
+        font = ImageFont.truetype(FONT_PATH, 50)  # Load the arial.ttf font
         d.text((10, 80), message, font=font, fill=(255, 255, 255))  # Draw the custom message on the image
         img_path = RELATIVE + 'custom_message.jpg'
         img.save(img_path)  # Save the image
         self.disp.show_image(img_path)  # Display the image
+        time.sleep(0.5)  # Display the image for half a second
 
     def display_score(self):  # Method to display the user's score
-        self.display_custom_message(f'Your Score: {self.score}')
+        self.display_custom_message(f'Your Score: {self.score}', "black")
 
     def load_scores(self):  # Method to load scores from a file
         try:
@@ -537,7 +543,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
     def display_leaderboard(self):  # Method to display the leaderboard
         sorted_scores = sorted(self.scores, reverse=True)[:5]  # Get the top 5 scores
         leaderboard_message = 'Leaderboard:\n' + '\n'.join([f'{i + 1}. {score}' for i, score in enumerate(sorted_scores)])
-        self.display_custom_message(leaderboard_message)
+        self.display_custom_message(leaderboard_message, "black")
 
     def display(self, pic):  # Method to display an image
         impath = RELATIVE + pic  # Define the image path
@@ -572,4 +578,3 @@ def main():
 
 if __name__ == '__main__':
     main()  # Run the main function if this script is executed
-
