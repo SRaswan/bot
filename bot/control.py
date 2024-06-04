@@ -86,7 +86,7 @@ class SampleControllerAsync(Node):
                 if response == self.sensor_stack[self.idx]:
                     self.idx += 1
                     self.score += 1
-                    self.display(MOVES[response])
+                    self.display(MOVES[response]+".png")
 
                     print("Nice! Keep going")
                     if self.idx >= len(self.sensor_stack):
@@ -115,7 +115,7 @@ class SampleControllerAsync(Node):
         if self.phase == 5:
             print("Show Color")
             if self.idx < len(self.sensor_stack):
-                self.display(COLORS[self.sensor_stack[self.idx]])
+                self.display(COLORS[self.sensor_stack[self.idx]]+".jpg")
                 self.idx += 1
             else:
                 self.phase = 6
