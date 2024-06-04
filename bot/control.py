@@ -158,6 +158,7 @@ class SampleControllerAsync(Node):
     def display(self, pic):
         impath = RELATIVE+pic
         disp = Display()
+        print("Displaying: ", impath)
         imgFile = Image.open(impath)
         imgFile = resizeimage.resize_width(imgFile, 320)
         imgFile.save(impath, imgFile.format)
