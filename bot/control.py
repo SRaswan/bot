@@ -159,11 +159,13 @@ class SampleControllerAsync(Node):
         impath = RELATIVE+pic
         disp = Display()
         print("Displaying: ", impath)
-        with Image.open("/home/ubuntu/ros2_ws/src/lab2task4/lab2task4/img/move_forward.png") as imgFile:
-            imgFile = resizeimage.resize_width(imgFile, 320)
-            imgFile.save(impath, imgFile.format)
-            disp.show_image(impath)
-            # imgFile.close()
+        img = Image.new('RGB', (100, 100))
+        print("PIL imported successfully, and Image object created.")
+        # with Image.open(impath) as imgFile:
+        #     imgFile = resizeimage.resize_width(imgFile, 320)
+        #     imgFile.save(impath, imgFile.format)
+        disp.show_image(img)
+        # img.close()
 
 
 def main():
