@@ -210,7 +210,6 @@ import RPi.GPIO as GPIO  # Import GPIO library for Raspberry Pi GPIO pin control
 import random  # Import random module for random number generation
 import cv2  # Import OpenCV for image processing
 from cv_bridge import CvBridge  # Import CvBridge to convert ROS image messages to OpenCV images
-from resizeimage import resizeimage  # Import resizeimage to resize images
 from PIL import Image as PILImage, ImageDraw, ImageFont  # Import PIL for image handling
 from sensor_msgs.msg import Image  # Import ROS Image message type
 
@@ -293,16 +292,23 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                     print("Nice! Keep going")  # Log the success
                     if self.idx >= len(self.sensor_stack):  # If all moves are matched
                         print("Correct! Moving to the next level.")  # Log the success
-                        self.phase = 0  # Move to phase 0
+                        self.phase = 3  # Move to phase 3
+                        self.idx = 0  # Reset the index for the next phase
                 else:
                     print("You failed! Try again.")  # Log the failure
                     self.sensor_stack = []  # Reset the sensor stack
-                    self.phase = 3  # Move to phase 3
+                    # self.phase = 7  # Move to phase 7
+
+        elif self.phase == 3:  # Phase 3: Transition to next round
+            print("Phase 3: Transition")  # Log the phase
+            # Implement transition logic here, such as a brief pause or message
+            time.sleep(1)  # Example of a brief pause
+            self.phase = 0  # Move back to phase 0 for the next round
 
         elif self.phase == 7:  # Phase 7: Picture
             print("Picture")  # Log the phase
             if self.current_frame is not None:
-                cv2.imwrite(RELATIVE+"pic.jpg", self.current_frame)  # Save the current frame as an image
+                cv2.imwrite(RELATIVE + "pic.jpg", self.current_frame)  # Save the current frame as an image
                 self.display("pic.jpg")  # Display the image
             self.phase = 8  # Move to phase 8
 
@@ -311,6 +317,8 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             message = "Robot's Turn"
         elif self.phase == 2:
             message = "Your Turn"
+        elif self.phase == 3:
+            message = "Next Level"
         else:
             message = ""
         img = PILImage.new('RGB', (320, 240), color=(0, 0, 0))  # Create a blank image
