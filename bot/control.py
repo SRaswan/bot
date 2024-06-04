@@ -233,6 +233,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         
         self.req = GoPupper.Request()  # Initialize the service request object
         self.sensor_stack = []  # Initialize the list to store sensor stack
+        self.user_input_stack = []  # Initialize the list to store user inputs
         self.idx = 0  # Initialize the index for tracking sensor stack
         self.phase = 0  # Initialize the phase variable for game state management
         self.score = 0  # Initialize the score variable
@@ -266,12 +267,13 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
     def pupper(self):  # Main game logic method
         self.display_phase_message()  # Display phase message on the screen
         print("Phase ", self.phase)  # Print the current phase
-        if self.phase == 0:  # Phase 0: Choosing move
+        if self.phase == 0:  # Phase 0: Choosing moves
             new_move = random.randint(0, 2)  # Choose a random move
             self.sensor_stack.append(new_move)  # Add the new move to the sensor stack
             print(f"Added move {new_move}")  # Log the added move
             self.phase = 1  # Move to phase 1
             self.idx = 0  # Reset the index
+            self.user_input_stack = []  # Reset the user input stack for the new round
 
         elif self.phase == 1:  # Phase 1: Performing moves
             print("Performing moves")  # Log the phase
@@ -287,18 +289,18 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             response = self.get_user_input()  # Get user input
             if response != -1:  # If valid input
                 self.display_user_selection(response)  # Display the user selection
-                if response == self.sensor_stack[self.idx]:  # If the input matches the expected move
-                    self.idx += 1  # Increment the index
-                    self.score += 1  # Increment the score
-                    print("Nice! Keep going")  # Log the success
-                    if self.idx >= len(self.sensor_stack):  # If all moves are matched
+                self.user_input_stack.append(response)  # Add the user input to the user input stack
+                if self.user_input_stack == self.sensor_stack[:len(self.user_input_stack)]:  # Check if user input matches the sensor stack up to this point
+                    if len(self.user_input_stack) == len(self.sensor_stack):  # If the entire sequence is matched
                         print("Correct! Moving to the next level.")  # Log the success
                         self.phase = 0  # Move to phase 0
-                        self.idx = 0  # Reset the index for the next phase
+                    else:
+                        print("Nice! Keep going")  # Log partial success
                 else:
                     print("You failed! Try again.")  # Log the failure
                     self.sensor_stack = []  # Reset the sensor stack
-                    # self.phase = 7  # Move to phase 7
+                    self.user_input_stack = []  # Reset the user input stack
+                    self.phase = 0  # Move to phase 0 for retry
 
         elif self.phase == 3:  # Phase 3: Transition to next round
             print("Phase 3: Transition")  # Log the phase
