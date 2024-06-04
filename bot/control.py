@@ -243,7 +243,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         self.req = GoPupper.Request()  # Create a new request object
         self.req.command = MOVES[idx]  # Set the command in the request object
         self.future = self.cli.call_async(self.req)  # Call the service asynchronously
-        rclpy.spin_until_future_complete(self, self.future)  # Wait until the service call is complete
+        # rclpy.spin_until_future_complete(self, self.future)  # Wait until the service call is complete
         return self.future.result()  # Return the result of the service call
 
     def get_user_input(self):  # Method to get user input from GPIO
@@ -300,20 +300,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                     print("You failed! Try again.")  # Log the failure
                     self.sensor_stack = []  # Reset the sensor stack
                     self.user_input_stack = []  # Reset the user input stack
-                    self.phase = 0  # Move to phase 0 for retry
-
-        elif self.phase == 3:  # Phase 3: Transition to next round
-            print("Phase 3: Transition")  # Log the phase
-            # Implement transition logic here, such as a brief pause or message
-            time.sleep(1)  # Example of a brief pause
-            self.phase = 0  # Move back to phase 0 for the next round
-
-        elif self.phase == 7:  # Phase 7: Picture
-            print("Picture")  # Log the phase
-            if self.current_frame is not None:
-                cv2.imwrite(RELATIVE + "pic.jpg", self.current_frame)  # Save the current frame as an image
-                self.display("pic.jpg")  # Display the image
-            self.phase = 8  # Move to phase 8
+                    # self.phase = 0  # Move to phase 0 for retry
 
     def display_phase_message(self):  # Method to display phase messages on the screen
         if self.phase in [0, 1]:
