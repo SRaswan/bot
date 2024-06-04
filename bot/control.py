@@ -513,7 +513,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
     def display_custom_message(self, message):  # Method to display custom messages
         img = PILImage.new('RGB', (320, 240), color=(0, 0, 0))  # Create a blank image
         d = ImageDraw.Draw(img)  # Initialize the drawing context
-        font = ImageFont.truetype("arial.ttf", 50)  # Load a larger font
+        font = ImageFont.truetype(RELATIVE+"arial.ttf", 50)  # Load a larger font
         d.text((10, 80), message, font=font, fill=(255, 255, 255))  # Draw the custom message on the image
         img_path = RELATIVE + 'custom_message.jpg'
         img.save(img_path)  # Save the image
