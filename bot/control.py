@@ -464,14 +464,14 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                 if self.user_input_stack == self.sensor_stack[:len(self.user_input_stack)]:  # Check if user input matches the sensor stack up to this point
                     if len(self.user_input_stack) == len(self.sensor_stack):  # If the entire sequence is matched
                         self.score += 1  # Increment the score
-                        self.display_custom_message("Correct! Moving to the next level.")
+                        self.display_custom_message("Correct! Moving \n to the next level.")
                         print("Correct! Moving to the next level.")  # Log the success
                         self.phase = 0  # Move to phase 0
                     else:
-                        self.display_custom_message("Nice! Keep going")
+                        self.display_custom_message("Nice! \n Keep going")
                         print("Nice! Keep going")  # Log partial success
                 else:
-                    self.display_custom_message("You failed! Try again.")
+                    self.display_custom_message("You failed! \n Try again.")
                     print("You failed! Try again.")  # Log the failure
                     self.scores.append(self.score)  # Save the score
                     self.save_scores()  # Save scores to file
@@ -505,7 +505,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         d = ImageDraw.Draw(img)  # Initialize the drawing context
         font = ImageFont.truetype(RELATIVE+"arial.ttf", 50)  # Load a larger font
         move_text = MOVES[selection]  # Get the text for the selected move
-        d.text((10, 10), f'You selected: {move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
+        d.text((10, 10), f'You selected: \n{move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
         img.save(img_path)  # Save the image
         self.disp.show_image(img_path)  # Display the image
         time.sleep(0.5)  # Display the image for half a second
