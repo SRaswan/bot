@@ -11,7 +11,7 @@ from resizeimage import resizeimage
 from PIL import Image, ImageDraw, ImageFont
 from sensor_msgs.msg import Image
 
-RELATIVE = "/home/ubuntu/ros2_ws/src/lab2task4/lab2task4/img/"
+RELATIVE = "/home/ubuntu/ros2_ws/src/bot/bot/img/"
 MOVES = ["move_forward", "move_right", "move_left"]
 COLORS = ["red", "green", "blue"]
 
