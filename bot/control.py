@@ -1249,12 +1249,10 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         super().__init__('sample_controller')  # Initialize the Node with the name 'sample_controller'
         self.cli = self.create_client(GoPupper, 'pup_command')  # Create a client for the GoPupper service
         
-        self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 1) # Initialize the subscription attribute
-        # self.subscription = None  
+        self.subscription = None  # Initialize the subscription attribute
         self.current_frame = None  # Initialize the current frame attribute
         self.br = CvBridge()  # Initialize CvBridge for converting ROS images to OpenCV
         self.disp = Display()  # Initialize the display
-        self.capture_image = False
 
         while not self.cli.wait_for_service(timeout_sec=1.0):  # Wait until the GoPupper service is available
             self.get_logger().info('service not available, waiting again...')  # Log service unavailability
@@ -1289,35 +1287,17 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
 
     def cam(self, data):  # Callback method to handle image data
         try:
-            if not self.capture_image:
-                return
-
-            # Convert ROS image message to OpenCV image
-            self.current_frame = self.br.imgmsg_to_cv2(data)
-            
-            if self.current_frame is None:
-                self.get_logger().error("No image data in current_frame")
-                return
-            
-            # Sort the scores and determine the image position
+            self.current_frame = self.br.imgmsg_to_cv2(data)  # Convert ROS image message to OpenCV image
             sorted_scores = sorted(self.scores, reverse=True)
-            if self.score not in sorted_scores:
-                self.get_logger().error("Score not found in sorted_scores")
-                return
-            
             position = sorted_scores.index(self.score) + 1
-            img_path = f'top_{position}.jpg'
-            
-            # Save the image
-            success = cv2.imwrite(img_path, self.current_frame)
-            if not success:
-                self.get_logger().error(f"Failed to write image to {img_path}")
-            else:
-                self.get_logger().info(f"Image successfully saved to {img_path}")
-            
-            # Reset the capture flag
-            self.capture_image = False
-            
+            img_path = RELATIVE + f'top_{position}.jpg'
+            cv2.imwrite(img_path, self.current_frame)
+
+            # Properly unsubscribe after capturing the image
+            if self.subscription is not None:
+                self.destroy_subscription(self.subscription)
+                self.subscription = None
+                
         except Exception as e:
             self.get_logger().error(f"Error converting image: {e}")
 
@@ -1381,8 +1361,8 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             self.display_custom_message("1", "black")
             time.sleep(1)
             self.display_custom_message("Say Cheese!", "black")
-            self.capture = True
-            time.sleep(3) # Allow some time for the image to be captured
+            self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 10)  # Start subscription just before capturing
+            time.sleep(2)  # Allow some time for the image to be captured
             self.display_custom_message("Photo taken!", "black")
             time.sleep(1)
             self.phase = 5  # Move to phase 5 (display leaderboard)
@@ -1466,10 +1446,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
     def load_scores(self):  # Method to load scores from a file
         try:
             with open(LEADERBOARD_FILE, 'r') as file:
-                try: 
-                    self.scores = [int(line.strip()) for line in file]
-                except:
-                    self.scores = []
+                self.scores = [int(line.strip()) for line in file]
         except FileNotFoundError:
             self.scores = []
 
@@ -1550,5 +1527,5 @@ def main():
         rclpy.shutdown()  # Shutdown the ROS 2 client library
         GPIO.cleanup()  # Clean up GPIO settings
 
-if __name__ == '__main__':
+if __name__ == '__':
     main()  # Run the main function if this script is executed
