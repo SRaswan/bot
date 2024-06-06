@@ -1380,7 +1380,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             self.display_custom_message("Say Cheese!", "black")
             # Set the flag to capture the image in the next callback
             self.capture_image = True
-            time.sleep(2)  # Allow some time for the image to be captured
+            time.sleep(3)  # Allow some time for the image to be captured
             self.display_custom_message("Photo taken!", "black")
             time.sleep(1)
             self.phase = 5  # Move to phase 5 (display leaderboard)
