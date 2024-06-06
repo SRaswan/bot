@@ -1254,7 +1254,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         self.current_frame = None  # Initialize the current frame attribute
         self.br = CvBridge()  # Initialize CvBridge for converting ROS images to OpenCV
         self.disp = Display()  # Initialize the display
-        
+        self.capture_image = False
 
         while not self.cli.wait_for_service(timeout_sec=1.0):  # Wait until the GoPupper service is available
             self.get_logger().info('service not available, waiting again...')  # Log service unavailability
