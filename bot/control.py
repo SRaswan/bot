@@ -1268,6 +1268,8 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         self.timer = self.create_timer(1.0, self.pupper)  # Create a timer to call the pupper method every second
         self.capture_image = False
 
+        self.display_default_image()  # Display the default image on the screen
+
     def send_move_request(self, idx):  # Method to send movement requests
         self.req = GoPupper.Request()  # Create a new request object
         self.req.command = MOVES[idx]  # Set the command in the request object
@@ -1347,14 +1349,14 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                 if self.user_input_stack == self.sensor_stack[:len(self.user_input_stack)]:  # Check if user input matches the sensor stack up to this point
                     if len(self.user_input_stack) == len(self.sensor_stack):  # If the entire sequence is matched
                         self.score += 1  # Increment the score
-                        self.display_custom_message("Correct! Moving to the next level.", "green")
+                        self.display_happy_message("Correct! Moving to the next level.")
                         print("Correct! Moving to the next level.")  # Log the success
                         self.phase = 0  # Move to phase 0
                     else:
                         self.display_custom_message("Nice! Keep going", "black")
                         print("Nice! Keep going")  # Log partial success
                 else:
-                    self.display_custom_message("You failed! Try again.", "red")
+                    self.display_sad_message("You failed! Try again.")
                     print("You failed! Try again.")  # Log the failure
                     self.scores.append(self.score)  # Save the score
                     self.save_scores()  # Save scores to file
@@ -1520,6 +1522,20 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             self.disp.show_image(impath)  # Display the image
         except Exception as e:
             print(f"Error displaying image: {e}")  # Log any errors
+
+    def display_default_image(self):  # Method to display the default image
+        self.disp.show_image_file(os.path.join(RELATIVE, "default.png"))  # Display the default image
+
+    def display_phase_message(self):  # Method to display phase message
+        self.disp.show_image_file(os.path.join(RELATIVE, f"{COLORS[self.phase]}.jpg"))  # Display the phase color image
+
+    def display_happy_message(self, message):  # Method to display happy message
+        self.disp.show_image_file(os.path.join(RELATIVE, "smile.png"))  # Display the happy image
+        self.disp.draw_text((0, 0), message, fill="black")  # Draw the message text on the display
+
+    def display_sad_message(self, message):  # Method to display sad message
+        self.disp.show_image_file(os.path.join(RELATIVE, "sad.png"))  # Display the sad image
+        self.disp.draw_text((0, 0), message, fill="black")  # Draw the message text on the display
 
     def clear_memory(self):  # Method to clear all scores and photos
         try:
