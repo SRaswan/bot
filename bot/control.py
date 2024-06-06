@@ -1464,7 +1464,10 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
     def load_scores(self):  # Method to load scores from a file
         try:
             with open(LEADERBOARD_FILE, 'r') as file:
-                self.scores = [int(line.strip()) for line in file]
+                try: 
+                    self.scores = [int(line.strip()) for line in file]
+                except:
+                    self.scores = []
         except FileNotFoundError:
             self.scores = []
 
