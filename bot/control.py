@@ -1372,6 +1372,10 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         elif self.phase == 4:  # Phase 4: Taking picture with countdown
             self.capture_image = True
             print("Phase 4: Taking picture with countdown")  # Log the phase
+            self.display_custom_message("5", "black")
+            time.sleep(1)
+            self.display_custom_message("4", "black")
+            time.sleep(1)
             self.display_custom_message("3", "black")
             time.sleep(1)
             self.display_custom_message("2", "black")
