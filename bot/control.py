@@ -1524,17 +1524,17 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             print(f"Error displaying image: {e}")  # Log any errors
 
     def display_default_image(self):  # Method to display the default image
-        self.disp.show_image_file(os.path.join(RELATIVE, "default.png"))  # Display the default image
+        self.disp.show_image(os.path.join(RELATIVE, "default.png"))  # Display the default image
 
     def display_phase_message(self):  # Method to display phase message
-        self.disp.show_image_file(os.path.join(RELATIVE, f"{COLORS[self.phase]}.jpg"))  # Display the phase color image
+        self.disp.show_image(os.path.join(RELATIVE, f"{COLORS[self.phase]}.jpg"))  # Display the phase color image
 
     def display_happy_message(self, message):  # Method to display happy message
-        self.disp.show_image_file(os.path.join(RELATIVE, "smile.png"))  # Display the happy image
+        self.disp.show_image(os.path.join(RELATIVE, "smile.png"))  # Display the happy image
         self.disp.draw_text((0, 0), message, fill="black")  # Draw the message text on the display
 
     def display_sad_message(self, message):  # Method to display sad message
-        self.disp.show_image_file(os.path.join(RELATIVE, "sad.png"))  # Display the sad image
+        self.disp.show_image(os.path.join(RELATIVE, "sad.png"))  # Display the sad image
         self.disp.draw_text((0, 0), message, fill="black")  # Draw the message text on the display
 
     def clear_memory(self):  # Method to clear all scores and photos
