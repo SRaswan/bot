@@ -1266,6 +1266,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         self.scores = []  # Initialize the list to store all scores
         self.load_scores()  # Load scores from file
         self.timer = self.create_timer(1.0, self.pupper)  # Create a timer to call the pupper method every second
+        self.capture_image = False
 
     def send_move_request(self, idx):  # Method to send movement requests
         self.req = GoPupper.Request()  # Create a new request object
