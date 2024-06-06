@@ -1394,7 +1394,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         d = ImageDraw.Draw(img)  # Initialize the drawing context
         font = ImageFont.truetype(FONT_PATH, 30)  # Load the arial.ttf font with a smaller size
         move_text = MOVES[selection]  # Get the text for the selected move
-        d.text((10, 10), f'You selected: /n{move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
+        d.text((10, 10), f'You selected: \n{move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
         img.save(img_path)  # Save the image
         self.disp.show_image(img_path)  # Display the image
         time.sleep(0.5)  # Display the image for half a second
@@ -1444,7 +1444,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                 try: 
                     self.scores = [int(line.strip()) for line in file]
                 except:
-                    self.score = []
+                    self.scores = []
         except FileNotFoundError:
             self.scores = []
 
