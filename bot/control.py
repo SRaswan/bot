@@ -1290,7 +1290,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             self.current_frame = self.br.imgmsg_to_cv2(data)  # Convert ROS image message to OpenCV image
             sorted_scores = sorted(self.scores, reverse=True)
             position = sorted_scores.index(self.score) + 1
-            img_path =  f'top_{position}.jpg'
+            img_path = RELATIVE + f'top_{position}.jpg'
             cv2.imwrite(img_path, self.current_frame)
             self.subscription = None  # Unsubscribe after capturing the image
         except Exception as e:
@@ -1336,8 +1336,6 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                     print("You failed! Try again.")  # Log the failure
                     self.scores.append(self.score)  # Save the score
                     self.save_scores()  # Save scores to file
-                    # self.display_score()  # Display the score
-                    # self.display_leaderboard()  # Display the leaderboard
                     self.phase = 3  # Move to phase 3 (end game)
 
         elif self.phase == 3:  # Phase 3: Ask for a picture
@@ -1493,19 +1491,19 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         except Exception as e:
             print(f"Error displaying image: {e}")  # Log any errors
 
-    # def clear_memory(self):  # Method to clear all scores and photos
-    #     try:
-    #         # Clear leaderboard file
-    #         open(LEADERBOARD_FILE, 'w').close()
-    #         self.scores = []
-    #         # Delete all top score photos 
-    #         for i in range(1, 4):
-    #             photo_path = RELATIVE + f'top_{i}.jpg'
-    #             if os.path.exists(photo_path):
-    #                 os.remove(photo_path)
-    #         self.display_custom_message("Memory cleared!", "black")
-    #     except Exception as e:
-    #         self.get_logger().error(f"Error clearing memory: {e}")
+    def clear_memory(self):  # Method to clear all scores and photos
+        try:
+            # Clear leaderboard file
+            open(LEADERBOARD_FILE, 'w').close()
+            self.scores = []
+            # Delete all top score photos
+            for i in range(1, 4):
+                photo_path = RELATIVE + f'top_{i}.jpg'
+                if os.path.exists(photo_path):
+                    os.remove(photo_path)
+            self.display_custom_message("Memory cleared!", "black")
+        except Exception as e:
+            self.get_logger().error(f"Error clearing memory: {e}")
 
 def main():
     GPIO.setmode(GPIO.BCM)  # Set GPIO mode to BCM
@@ -1527,4 +1525,3 @@ def main():
 
 if __name__ == '__main__':
     main()  # Run the main function if this script is executed
-
