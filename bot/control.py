@@ -1370,6 +1370,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                 self.phase = 5  # Move to phase 5 (display leaderboard without picture)
 
         elif self.phase == 4:  # Phase 4: Taking picture with countdown
+            self.capture_image = True
             print("Phase 4: Taking picture with countdown")  # Log the phase
             self.display_custom_message("3", "black")
             time.sleep(1)
@@ -1379,7 +1380,6 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             time.sleep(1)
             self.display_custom_message("Say Cheese!", "black")
             # Set the flag to capture the image in the next callback
-            self.capture_image = True
             time.sleep(3)  # Allow some time for the image to be captured
             self.display_custom_message("Photo taken!", "black")
             time.sleep(1)
