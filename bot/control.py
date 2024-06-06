@@ -1224,8 +1224,317 @@
 
 # VERSION 6
 
+# from pupper_interfaces.srv import GoPupper  # Import the GoPupper service definition
+# from MangDang.mini_pupper.display import Display, BehaviorState  # Import display and behavior state from mini_pupper
+# import rclpy  # Import the ROS 2 Python client library
+# from rclpy.node import Node  # Import Node class from ROS 2
+# import time  # Import time module for delays
+# import RPi.GPIO as GPIO  # Import GPIO library for Raspberry Pi GPIO pin control
+# import random  # Import random module for random number generation
+# import cv2  # Import OpenCV for image processing
+# from cv_bridge import CvBridge  # Import CvBridge to convert ROS image messages to OpenCV images
+# from PIL import Image as PILImage, ImageDraw, ImageFont  # Import PIL for image handling
+# from sensor_msgs.msg import Image  # Import ROS Image message type
+# import os  # Import os module for file operations
+
+# RELATIVE = "/home/ubuntu/ros2_ws/src/bot/bot/img/"  # Define the relative path for images
+# MOVES = ["move_forward", "move_right", "move_left"]  # List of possible movement commands
+# COLORS = ["red", "green", "blue"]  # List of colors for display purposes
+# LEADERBOARD_FILE = RELATIVE + "leaderboard.txt"  # File to store leaderboard scores
+# FONT_PATH = RELATIVE + "arial.ttf"  # Path to the arial.ttf font file
+
+# class SampleControllerAsync(Node):  # Define the main class for the ROS node
+
+#     def __init__(self):
+#         super().__init__('sample_controller')  # Initialize the Node with the name 'sample_controller'
+#         self.cli = self.create_client(GoPupper, 'pup_command')  # Create a client for the GoPupper service
+        
+#         self.subscription = None  # Initialize the subscription attribute
+#         self.current_frame = None  # Initialize the current frame attribute
+#         self.br = CvBridge()  # Initialize CvBridge for converting ROS images to OpenCV
+#         self.disp = Display()  # Initialize the display
+
+#         while not self.cli.wait_for_service(timeout_sec=1.0):  # Wait until the GoPupper service is available
+#             self.get_logger().info('service not available, waiting again...')  # Log service unavailability
+        
+#         self.req = GoPupper.Request()  # Initialize the service request object
+#         self.sensor_stack = []  # Initialize the list to store sensor stack
+#         self.user_input_stack = []  # Initialize the list to store user inputs
+#         self.idx = 0  # Initialize the index for tracking sensor stack
+#         self.phase = 0  # Initialize the phase variable for game state management
+#         self.score = 0  # Initialize the score variable
+#         self.scores = []  # Initialize the list to store all scores
+#         self.load_scores()  # Load scores from file
+#         self.timer = self.create_timer(1.0, self.pupper)  # Create a timer to call the pupper method every second
+
+#     def send_move_request(self, idx):  # Method to send movement requests
+#         self.req = GoPupper.Request()  # Create a new request object
+#         self.req.command = MOVES[idx]  # Set the command in the request object
+#         self.future = self.cli.call_async(self.req)  # Call the service asynchronously
+#         return self.future.result()  # Return the result of the service call
+
+#     def get_user_input(self):  # Method to get user input from GPIO
+#         tFront = GPIO.input(6)  # Read front sensor
+#         tLeft = GPIO.input(3)  # Read left sensor
+#         tRight = GPIO.input(16)  # Read right sensor
+#         if not tFront:
+#             return 0  # Return 0 if front sensor is pressed
+#         elif not tRight:
+#             return 1  # Return 1 if right sensor is pressed
+#         elif not tLeft:
+#             return 2  # Return 2 if left sensor is pressed
+#         return -1  # Return -1 if no sensor is pressed
+
+#     def cam(self, data):  # Callback method to handle image data
+#         try:
+#             self.current_frame = self.br.imgmsg_to_cv2(data)  # Convert ROS image message to OpenCV image
+#             sorted_scores = sorted(self.scores, reverse=True)
+#             position = sorted_scores.index(self.score) + 1
+#             img_path = RELATIVE + f'top_{position}.jpg'
+#             cv2.imwrite(img_path, self.current_frame)
+
+#             # Properly unsubscribe after capturing the image
+#             if self.subscription is not None:
+#                 self.destroy_subscription(self.subscription)
+#                 self.subscription = None
+                
+#         except Exception as e:
+#             self.get_logger().error(f"Error converting image: {e}")
+
+#     def pupper(self):  # Main game logic method
+#         self.display_phase_message()  # Display phase message on the screen
+#         print("Phase ", self.phase)  # Print the current phase
+#         if self.phase == 0:  # Phase 0: Choosing moves
+#             new_move = random.randint(0, 2)  # Choose a random move
+#             self.sensor_stack.append(new_move)  # Add the new move to the sensor stack
+#             print(f"Added move {new_move}")  # Log the added move
+#             self.phase = 1  # Move to phase 1
+#             self.idx = 0  # Reset the index
+#             self.user_input_stack = []  # Reset the user input stack for the new round
+
+#         elif self.phase == 1:  # Phase 1: Performing moves
+#             print("Performing moves")  # Log the phase
+#             if self.idx < len(self.sensor_stack):  # If there are more moves to perform
+#                 self.send_move_request(self.sensor_stack[self.idx])  # Send the move request
+#                 self.idx += 1  # Increment the index
+#             else:
+#                 self.phase = 2  # Move to phase 2
+#                 self.idx = 0  # Reset the index
+
+#         elif self.phase == 2:  # Phase 2: Sensing user input
+#             print("Waiting for user input")  # Log the phase
+#             response = self.get_user_input()  # Get user input
+#             if response != -1:  # If valid input
+#                 self.display_user_selection(response)  # Display the user selection
+#                 self.user_input_stack.append(response)  # Add the user input to the user input stack
+#                 if self.user_input_stack == self.sensor_stack[:len(self.user_input_stack)]:  # Check if user input matches the sensor stack up to this point
+#                     if len(self.user_input_stack) == len(self.sensor_stack):  # If the entire sequence is matched
+#                         self.score += 1  # Increment the score
+#                         self.display_custom_message("Correct! Moving to the next level.", "green")
+#                         print("Correct! Moving to the next level.")  # Log the success
+#                         self.phase = 0  # Move to phase 0
+#                     else:
+#                         self.display_custom_message("Nice! Keep going", "black")
+#                         print("Nice! Keep going")  # Log partial success
+#                 else:
+#                     self.display_custom_message("You failed! Try again.", "red")
+#                     print("You failed! Try again.")  # Log the failure
+#                     self.scores.append(self.score)  # Save the score
+#                     self.save_scores()  # Save scores to file
+#                     self.phase = 3  # Move to phase 3 (end game)
+
+#         elif self.phase == 3:  # Phase 3: Ask for a picture
+#             print("Phase 3: Ask for a picture")  # Log the phase
+#             self.display_custom_message("Take a picture?\nLeft: Yes, Right: No", "black")
+#             response = self.get_user_input()  # Get user input
+#             if response == 1:  # Left sensor for yes
+#                 self.phase = 4  # Move to phase 4 (taking picture)
+#             elif response == 2:  # Right sensor for no
+#                 self.phase = 5  # Move to phase 5 (display leaderboard without picture)
+
+#         elif self.phase == 4:  # Phase 4: Taking picture with countdown
+#             print("Phase 4: Taking picture with countdown")  # Log the phase
+#             self.display_custom_message("3", "black")
+#             time.sleep(1)
+#             self.display_custom_message("2", "black")
+#             time.sleep(1)
+#             self.display_custom_message("1", "black")
+#             time.sleep(1)
+#             self.display_custom_message("Say Cheese!", "black")
+#             self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 10)  # Start subscription just before capturing
+#             time.sleep(2)  # Allow some time for the image to be captured
+#             self.display_custom_message("Photo taken!", "black")
+#             time.sleep(1)
+#             self.phase = 5  # Move to phase 5 (display leaderboard)
+
+#         elif self.phase == 5:  # Phase 5: Display leaderboard and waiting to play again
+#             print("Phase 5: Displaying leaderboard and waiting to play again")  # Log the phase
+#             self.display_leaderboard()  # Display the leaderboard
+#             time.sleep(5)  # Display the leaderboard for 5 seconds
+#             self.display_custom_message("Touch sensor to play again", "black")
+#             response = self.get_user_input()  # Get user input to play again
+#             if response != -1:  # If a sensor is touched
+#                 self.score = 0  # Reset the score
+#                 self.sensor_stack = []  # Reset the sensor stack
+#                 self.phase = 0  # Move to phase 0 for a new game
+
+#     def display_phase_message(self):  # Method to display phase messages on the screen
+#         if self.phase in [0, 1]:
+#             message = "Robot's Turn"
+#             color = "black"
+#         elif self.phase == 2:
+#             message = "Your Turn"
+#             color = "black"
+#         elif self.phase == 3:
+#             message = "Next Level"
+#             color = "black"
+#         else:
+#             message = ""
+#             color = "black"
+#         self.display_custom_message(message, color)
+
+#     def display_user_selection(self, selection):  # Method to display user selection
+#         img_path = RELATIVE + f'selection_{selection}.jpg'  # Define the image path
+#         img = PILImage.new('RGB', (320, 240), color="black")  # Create a blank image
+#         d = ImageDraw.Draw(img)  # Initialize the drawing context
+#         font = ImageFont.truetype(FONT_PATH, 30)  # Load the arial.ttf font with a smaller size
+#         move_text = MOVES[selection]  # Get the text for the selected move
+#         d.text((10, 10), f'You selected: \n{move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
+#         img.save(img_path)  # Save the image
+#         self.disp.show_image(img_path)  # Display the image
+#         time.sleep(0.5)  # Display the image for half a second
+
+#     def display_custom_message(self, message, background_color):  # Method to display custom messages with background color
+#         img = PILImage.new('RGB', (320, 240), color=background_color)  # Create a blank image with the given background color
+#         d = ImageDraw.Draw(img)  # Initialize the drawing context
+#         font_size = self.get_optimal_font_size(message)  # Get optimal font size
+#         font = ImageFont.truetype(FONT_PATH, font_size)  # Load the arial.ttf font with optimal size
+#         lines = self.wrap_text(message, font, 300)  # Wrap text to fit within the screen width
+#         y_text = 10
+#         for line in lines:
+#             width, height = d.textsize(line, font=font)
+#             d.text(((320 - width) / 2, y_text), line, font=font, fill=(255, 255, 255))
+#             y_text += height
+#         img_path = RELATIVE + 'custom_message.jpg'
+#         img.save(img_path)  # Save the image
+#         self.disp.show_image(img_path)  # Display the image
+#         time.sleep(0.5)  # Display the image for half a second
+
+#     def get_optimal_font_size(self, text, max_width=320, max_height=240):
+#         font_size = 50  # Start with a large font size
+#         font = ImageFont.truetype(FONT_PATH, font_size)
+#         width, height = font.getsize(text)
+#         while width > max_width or height > max_height:
+#             font_size -= 1
+#             font = ImageFont.truetype(FONT_PATH, font_size)
+#             width, height = font.getsize(text)
+#         return font_size
+
+#     def wrap_text(self, text, font, max_width):
+#         lines = []
+#         words = text.split()
+#         while words:
+#             line = ''
+#             while words and font.getsize(line + words[0])[0] <= max_width:
+#                 line = line + (words.pop(0) + ' ')
+#             lines.append(line.strip())
+#         return lines
+
+#     def display_score(self):  # Method to display the user's score
+#         self.display_custom_message(f'Your Score: {self.score}', "black")
+
+#     def load_scores(self):  # Method to load scores from a file
+#         try:
+#             with open(LEADERBOARD_FILE, 'r') as file:
+#                 self.scores = [int(line.strip()) for line in file]
+#         except FileNotFoundError:
+#             self.scores = []
+
+#     def save_scores(self):  # Method to save scores to a file
+#         with open(LEADERBOARD_FILE, 'w') as file:
+#             for score in self.scores:
+#                 file.write(f'{score}\n')
+
+#     def display_leaderboard(self):  # Method to display the leaderboard
+#         sorted_scores = sorted(self.scores, reverse=True)[:3]  # Get the top 3 scores
+#         leaderboard_message = 'Leaderboard:\n' + '\n'.join([f'{i + 1}. {score}' for i, score in enumerate(sorted_scores)])
+#         self.display_multiline_message(leaderboard_message, "black")
+#         for i, score in enumerate(sorted_scores):
+#             pic_path = f'top_{i + 1}.jpg'
+#             self.display(pic_path)
+#             time.sleep(2)
+
+#     def display_multiline_message(self, message, background_color):  # Method to display custom messages with background color
+#         img = PILImage.new('RGB', (320, 240), color=background_color)  # Create a blank image with the given background color
+#         d = ImageDraw.Draw(img)  # Initialize the drawing context
+#         font_size = 30  # Start with a reasonable font size
+#         font = ImageFont.truetype(FONT_PATH, font_size)  # Load the arial.ttf font with the starting size
+#         lines = message.split('\n')  # Split the message into lines
+#         y_text = 10
+#         for line in lines:
+#             while font.getsize(line)[0] > 320:  # Reduce font size if the line is too wide
+#                 font_size -= 1
+#                 font = ImageFont.truetype(FONT_PATH, font_size)
+#             d.text((10, y_text), line, font=font, fill=(255, 255, 255))
+#             y_text += font.getsize(line)[1] + 5  # Increment y position for the next line with some padding
+#         img_path = RELATIVE + 'custom_message.jpg'
+#         img.save(img_path)  # Save the image
+#         self.disp.show_image(img_path)  # Display the image
+#         time.sleep(0.5)  # Display the image for half a second
+
+#     def display(self, pic):  # Method to display an image
+#         impath = RELATIVE + pic  # Define the image path
+#         print("Displaying: ", impath)  # Log the image path
+#         try:
+#             img = cv2.imread(impath)  # Read the image using OpenCV
+#             if img is None:
+#                 raise FileNotFoundError(f"Image not found: {impath}")
+#             img = cv2.resize(img, (320, 240))  # Resize the image
+#             cv2.imwrite(impath, img)  # Save the resized image
+#             self.disp.show_image(impath)  # Display the image
+#         except Exception as e:
+#             print(f"Error displaying image: {e}")  # Log any errors
+
+#     def clear_memory(self):  # Method to clear all scores and photos
+#         try:
+#             # Clear leaderboard file
+#             open(LEADERBOARD_FILE, 'w').close()
+#             self.scores = []
+#             # Delete all top score photos
+#             for i in range(1, 4):
+#                 photo_path = RELATIVE + f'top_{i}.jpg'
+#                 if os.path.exists(photo_path):
+#                     os.remove(photo_path)
+#             self.display_custom_message("Memory cleared!", "black")
+#         except Exception as e:
+#             self.get_logger().error(f"Error clearing memory: {e}")
+
+# def main():
+#     GPIO.setmode(GPIO.BCM)  # Set GPIO mode to BCM
+#     GPIO.setup(6, GPIO.IN)  # Set up front sensor pin
+#     GPIO.setup(3, GPIO.IN)  # Set up left sensor pin
+#     GPIO.setup(16, GPIO.IN)  # Set up right sensor pin
+
+#     rclpy.init()  # Initialize the ROS 2 client library
+#     sample_controller = SampleControllerAsync()  # Create an instance of the SampleControllerAsync class
+
+#     try:
+#         rclpy.spin(sample_controller)  # Spin the node to keep it active
+#     except KeyboardInterrupt:
+#         pass
+#     finally:
+#         sample_controller.destroy_node()  # Destroy the node
+#         rclpy.shutdown()  # Shutdown the ROS 2 client library
+#         GPIO.cleanup()  # Clean up GPIO settings
+
+# if __name__ == '__':
+#     main()  # Run the main function if this script is executed
+
+# VERSION 7 WITH SOUND 
+
 from pupper_interfaces.srv import GoPupper  # Import the GoPupper service definition
 from MangDang.mini_pupper.display import Display, BehaviorState  # Import display and behavior state from mini_pupper
+from MangDang.mini_pupper.audio import Audio  # Import audio module from mini_pupper
 import rclpy  # Import the ROS 2 Python client library
 from rclpy.node import Node  # Import Node class from ROS 2
 import time  # Import time module for delays
@@ -1253,6 +1562,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         self.current_frame = None  # Initialize the current frame attribute
         self.br = CvBridge()  # Initialize CvBridge for converting ROS images to OpenCV
         self.disp = Display()  # Initialize the display
+        self.audio = Audio()  # Initialize the audio
 
         while not self.cli.wait_for_service(timeout_sec=1.0):  # Wait until the GoPupper service is available
             self.get_logger().info('service not available, waiting again...')  # Log service unavailability
@@ -1292,6 +1602,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             position = sorted_scores.index(self.score) + 1
             img_path = RELATIVE + f'top_{position}.jpg'
             cv2.imwrite(img_path, self.current_frame)
+            self.display(f'top_{position}.jpg')
 
             # Properly unsubscribe after capturing the image
             if self.subscription is not None:
@@ -1330,6 +1641,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                 if self.user_input_stack == self.sensor_stack[:len(self.user_input_stack)]:  # Check if user input matches the sensor stack up to this point
                     if len(self.user_input_stack) == len(self.sensor_stack):  # If the entire sequence is matched
                         self.score += 1  # Increment the score
+                        self.audio.play_sound("correct")  # Play correct sound
                         self.display_custom_message("Correct! Moving to the next level.", "green")
                         print("Correct! Moving to the next level.")  # Log the success
                         self.phase = 0  # Move to phase 0
@@ -1337,6 +1649,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                         self.display_custom_message("Nice! Keep going", "black")
                         print("Nice! Keep going")  # Log partial success
                 else:
+                    self.audio.play_sound("wrong")  # Play wrong sound
                     self.display_custom_message("You failed! Try again.", "red")
                     print("You failed! Try again.")  # Log the failure
                     self.scores.append(self.score)  # Save the score
@@ -1362,6 +1675,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             time.sleep(1)
             self.display_custom_message("Say Cheese!", "black")
             self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 10)  # Start subscription just before capturing
+            self.audio.play_sound("photo")  # Play photo sound
             time.sleep(2)  # Allow some time for the image to be captured
             self.display_custom_message("Photo taken!", "black")
             time.sleep(1)
@@ -1460,7 +1774,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         leaderboard_message = 'Leaderboard:\n' + '\n'.join([f'{i + 1}. {score}' for i, score in enumerate(sorted_scores)])
         self.display_multiline_message(leaderboard_message, "black")
         for i, score in enumerate(sorted_scores):
-            pic_path = f'top_{i + 1}.jpg'
+            pic_path = RELATIVE + f'top_{i + 1}.jpg'
             self.display(pic_path)
             time.sleep(2)
 
@@ -1527,5 +1841,5 @@ def main():
         rclpy.shutdown()  # Shutdown the ROS 2 client library
         GPIO.cleanup()  # Clean up GPIO settings
 
-if __name__ == '__':
+if __name__ == '__main__':
     main()  # Run the main function if this script is executed
