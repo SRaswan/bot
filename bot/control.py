@@ -1249,7 +1249,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         super().__init__('sample_controller')  # Initialize the Node with the name 'sample_controller'
         self.cli = self.create_client(GoPupper, 'pup_command')  # Create a client for the GoPupper service
         
-        self.subscription = None  # Initialize the subscription attribute
+        self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.pupper, 5) # Initialize the subscription attribute
         self.current_frame = None  # Initialize the current frame attribute
         self.br = CvBridge()  # Initialize CvBridge for converting ROS images to OpenCV
         self.disp = Display()  # Initialize the display
@@ -1295,14 +1295,14 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             self.display(f'top_{position}.jpg')
 
             # Properly unsubscribe after capturing the image
-            if self.subscription is not None:
-                self.destroy_subscription(self.subscription)
-                self.subscription = None
+            # if self.subscription is not None:
+            #     self.destroy_subscription(self.subscription)
+            #     self.subscription = None
                 
         except Exception as e:
             self.get_logger().error(f"Error converting image: {e}")
 
-    def pupper(self):  # Main game logic method
+    def pupper(self, data):  # Main game logic method
         self.display_phase_message()  # Display phase message on the screen
         print("Phase ", self.phase)  # Print the current phase
         if self.phase == 0:  # Phase 0: Choosing moves
@@ -1362,7 +1362,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             self.display_custom_message("1", "black")
             time.sleep(1)
             self.display_custom_message("Say Cheese!", "black")
-            self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 10)  # Start subscription just before capturing
+            self.cam(data)
             time.sleep(2)  # Allow some time for the image to be captured
             self.display_custom_message("Photo taken!", "black")
             time.sleep(1)
