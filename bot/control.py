@@ -1290,7 +1290,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             self.current_frame = self.br.imgmsg_to_cv2(data)  # Convert ROS image message to OpenCV image
             sorted_scores = sorted(self.scores, reverse=True)
             position = sorted_scores.index(self.score) + 1
-            img_path = RELATIVE + f'top_{position}.jpg'
+            img_path =  f'top_{position}.jpg'
             cv2.imwrite(img_path, self.current_frame)
             self.subscription = None  # Unsubscribe after capturing the image
         except Exception as e:
@@ -1458,7 +1458,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         leaderboard_message = 'Leaderboard:\n' + '\n'.join([f'{i + 1}. {score}' for i, score in enumerate(sorted_scores)])
         self.display_multiline_message(leaderboard_message, "black")
         for i, score in enumerate(sorted_scores):
-            pic_path = RELATIVE + f'top_{i + 1}.jpg'
+            pic_path = f'top_{i + 1}.jpg'
             self.display(pic_path)
             time.sleep(2)
 
