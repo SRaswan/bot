@@ -1292,7 +1292,12 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             position = sorted_scores.index(self.score) + 1
             img_path = RELATIVE + f'top_{position}.jpg'
             cv2.imwrite(img_path, self.current_frame)
-            self.subscription = None  # Unsubscribe after capturing the image
+
+            # Properly unsubscribe after capturing the image
+            if self.subscription is not None:
+                self.destroy_subscription(self.subscription)
+                self.subscription = None
+                
         except Exception as e:
             self.get_logger().error(f"Error converting image: {e}")
 
