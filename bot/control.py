@@ -1349,6 +1349,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
 
         elif self.phase == 4:  # Phase 4: Taking picture with countdown
             print("Phase 4: Taking picture with countdown")  # Log the phase
+            self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 10)
             self.display_custom_message("3", "black")
             time.sleep(1)
             self.display_custom_message("2", "black")
@@ -1356,9 +1357,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             self.display_custom_message("1", "black")
             time.sleep(1)
             self.display_custom_message("Say Cheese!", "black")
-            time.sleep(1)
-            self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 10)
-            time.sleep(2)  # Allow some time for the image to be captured
+            time.sleep(3) # Allow some time for the image to be captured
             self.display_custom_message("Photo taken!", "black")
             time.sleep(1)
             self.phase = 5  # Move to phase 5 (display leaderboard)
@@ -1395,7 +1394,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         d = ImageDraw.Draw(img)  # Initialize the drawing context
         font = ImageFont.truetype(FONT_PATH, 30)  # Load the arial.ttf font with a smaller size
         move_text = MOVES[selection]  # Get the text for the selected move
-        d.text((10, 10), f'You selected: {move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
+        d.text((10, 10), f'You selected: /n{move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
         img.save(img_path)  # Save the image
         self.disp.show_image(img_path)  # Display the image
         time.sleep(0.5)  # Display the image for half a second
