@@ -1358,6 +1358,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                     print("You failed! Try again.")  # Log the failure
                     self.scores.append(self.score)  # Save the score
                     self.save_scores()  # Save scores to file
+                    self.display_score() # Display the score
                     self.phase = 3  # Move to phase 3 (end game)
 
         elif self.phase == 3:  # Phase 3: Ask for a picture
