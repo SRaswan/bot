@@ -1249,7 +1249,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         super().__init__('sample_controller')  # Initialize the Node with the name 'sample_controller'
         self.cli = self.create_client(GoPupper, 'pup_command')  # Create a client for the GoPupper service
         
-        self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.pupper, 5) # Initialize the subscription attribute
+        self.subscription = self.create_subscription(Image, '/oak/rgb/image_raw', self.cam, 1) # Initialize the subscription attribute
         self.current_frame = None  # Initialize the current frame attribute
         self.br = CvBridge()  # Initialize CvBridge for converting ROS images to OpenCV
         self.disp = Display()  # Initialize the display
@@ -1287,22 +1287,37 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
 
     def cam(self, data):  # Callback method to handle image data
         try:
-            self.current_frame = self.br.imgmsg_to_cv2(data)  # Convert ROS image message to OpenCV image
-            sorted_scores = sorted(self.scores, reverse=True)
-            position = sorted_scores.index(self.score) + 1
-            img_path = RELATIVE + f'top_{position}.jpg'
-            cv2.imwrite(img_path, self.current_frame)
-            self.display(f'top_{position}.jpg')
-
-            # Properly unsubscribe after capturing the image
-            # if self.subscription is not None:
-            #     self.destroy_subscription(self.subscription)
-            #     self.subscription = None
+            # Convert ROS image message to OpenCV image
+            self.current_frame = self.br.imgmsg_to_cv2(data)
+            
+            if self.capture_image:
+                if self.current_frame is None:
+                    self.get_logger().error("No image data in current_frame")
+                    return
+                
+                # Sort the scores and determine the image position
+                sorted_scores = sorted(self.scores, reverse=True)
+                if self.score not in sorted_scores:
+                    self.get_logger().error("Score not found in sorted_scores")
+                    return
+                
+                position = sorted_scores.index(self.score) + 1
+                img_path = RELATIVE + f'top_{position}.jpg'
+                
+                # Save the image
+                success = cv2.imwrite(img_path, self.current_frame)
+                if not success:
+                    self.get_logger().error(f"Failed to write image to {img_path}")
+                else:
+                    self.get_logger().info(f"Image successfully saved to {img_path}")
+                
+                # Reset the capture flag
+                self.capture_image = False
                 
         except Exception as e:
             self.get_logger().error(f"Error converting image: {e}")
 
-    def pupper(self, data):  # Main game logic method
+    def pupper(self):  # Main game logic method
         self.display_phase_message()  # Display phase message on the screen
         print("Phase ", self.phase)  # Print the current phase
         if self.phase == 0:  # Phase 0: Choosing moves
@@ -1362,7 +1377,8 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
             self.display_custom_message("1", "black")
             time.sleep(1)
             self.display_custom_message("Say Cheese!", "black")
-            self.cam(data)
+            # Set the flag to capture the image in the next callback
+            self.capture_image = True
             time.sleep(2)  # Allow some time for the image to be captured
             self.display_custom_message("Photo taken!", "black")
             time.sleep(1)
