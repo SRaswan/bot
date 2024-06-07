@@ -1348,16 +1348,13 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                     if len(self.user_input_stack) == len(self.sensor_stack):  # If the entire sequence is matched
                         self.score += 1  # Increment the score
                         self.display_custom_message("Correct! Moving to the next level.", "green")
-                        time.sleep(1)
                         print("Correct! Moving to the next level.")  # Log the success
                         self.phase = 0  # Move to phase 0
                     else:
                         self.display_custom_message("Nice! Keep going", "black")
                         print("Nice! Keep going")  # Log partial success
                 else:
-                    # self.display_custom_message("You failed! Try again.", "red")
-                    self.display("sad.png")
-                    time.sleep(1)
+                    self.display_custom_message("You failed! Try again.", "red")
                     print("You failed! Try again.")  # Log the failure
                     self.scores.append(self.score)  # Save the score
                     self.save_scores()  # Save scores to file
