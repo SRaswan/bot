@@ -1349,7 +1349,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                         self.score += 1  # Increment the score
                         # self.display_custom_message("Correct! Moving to the next level.", "green")
                         self.display("smile.png")
-                        time.sleep(0.5)
+                        time.sleep(1)
                         print("Correct! Moving to the next level.")  # Log the success
                         self.phase = 0  # Move to phase 0
                     else:
@@ -1358,7 +1358,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                 else:
                     # self.display_custom_message("You failed! Try again.", "red")
                     self.display("sad.png")
-                    time.sleep(0.5)
+                    time.sleep(1)
                     print("You failed! Try again.")  # Log the failure
                     self.scores.append(self.score)  # Save the score
                     self.save_scores()  # Save scores to file
