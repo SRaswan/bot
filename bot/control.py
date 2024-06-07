@@ -1413,7 +1413,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         self.display_custom_message(message, color)
 
     def display_user_selection(self, selection):  # Method to display user selection
-        self.display(f"{selection}.png")
+        self.display(f"{MOVES[selection]}.png")
         # img_path = RELATIVE + f'selection_{selection}.jpg'  # Define the image path
         # img = PILImage.new('RGB', (320, 240), color="black")  # Create a blank image
         # d = ImageDraw.Draw(img)  # Initialize the drawing context
