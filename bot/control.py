@@ -1347,8 +1347,7 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                 if self.user_input_stack == self.sensor_stack[:len(self.user_input_stack)]:  # Check if user input matches the sensor stack up to this point
                     if len(self.user_input_stack) == len(self.sensor_stack):  # If the entire sequence is matched
                         self.score += 1  # Increment the score
-                        # self.display_custom_message("Correct! Moving to the next level.", "green")
-                        self.display("smile.png")
+                        self.display_custom_message("Correct! Moving to the next level.", "green")
                         time.sleep(1)
                         print("Correct! Moving to the next level.")  # Log the success
                         self.phase = 0  # Move to phase 0
@@ -1512,34 +1511,16 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         self.disp.show_image(img_path)  # Display the image
         time.sleep(0.5)  # Display the image for half a second
 
-    def display(self, pic):
+    def display(self, pic):  # Method to display an image
         impath = RELATIVE + pic  # Define the image path
         print("Displaying: ", impath)  # Log the image path
         try:
-            # Read the image using OpenCV
-            img = cv2.imread(impath)
+            img = cv2.imread(impath)  # Read the image using OpenCV
             if img is None:
                 raise FileNotFoundError(f"Image not found: {impath}")
-
-            # Resize the image
-            img = cv2.resize(img, (320, 240))
-
-            # Convert the OpenCV image (BGR) to PIL format (RGB)
-            img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            pil_img = PILImage.fromarray(img_rgb)
-
-            # Create a white background
-            background = PILImage.new('RGB', (320, 240), color="white")
-
-            # Paste the resized image onto the white background
-            background.paste(pil_img, (0, 0))
-
-            # Save the combined image
-            combined_path = RELATIVE + "combined_" + pic
-            background.save(combined_path)
-
-            # Display the image
-            self.disp.show_image(combined_path)
+            img = cv2.resize(img, (320, 240))  # Resize the image
+            cv2.imwrite(impath, img)  # Save the resized image
+            self.disp.show_image(impath)  # Display the image
         except Exception as e:
             print(f"Error displaying image: {e}")  # Log any errors
 
