@@ -1413,15 +1413,15 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
         self.display_custom_message(message, color)
 
     def display_user_selection(self, selection):  # Method to display user selection
-        self.display(f"{MOVES[selection]}.png")
-        # img_path = RELATIVE + f'selection_{selection}.jpg'  # Define the image path
-        # img = PILImage.new('RGB', (320, 240), color="black")  # Create a blank image
-        # d = ImageDraw.Draw(img)  # Initialize the drawing context
-        # font = ImageFont.truetype(FONT_PATH, 30)  # Load the arial.ttf font with a smaller size
-        # move_text = MOVES[selection]  # Get the text for the selected move
-        # d.text((10, 10), f'You selected: \n{move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
-        # img.save(img_path)  # Save the image
-        # self.disp.show_image(img_path)  # Display the image
+        # self.display(f"{MOVES[selection]}.png")
+        img_path = RELATIVE + f'selection_{selection}.jpg'  # Define the image path
+        img = PILImage.new('RGB', (320, 240), color="black")  # Create a blank image
+        d = ImageDraw.Draw(img)  # Initialize the drawing context
+        font = ImageFont.truetype(FONT_PATH, 30)  # Load the arial.ttf font with a smaller size
+        move_text = MOVES[selection]  # Get the text for the selected move
+        d.text((10, 10), f'You selected: \n{move_text}', font=font, fill=(255, 255, 255))  # Draw the selection text on the image
+        img.save(img_path)  # Save the image
+        self.disp.show_image(img_path)  # Display the image
         time.sleep(0.5)  # Display the image for half a second
 
     def display_custom_message(self, message, background_color):  # Method to display custom messages with background color
