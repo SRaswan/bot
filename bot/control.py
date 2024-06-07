@@ -1514,6 +1514,8 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
 
     def display(self, pic):  # Method to display an image
         impath = RELATIVE + pic  # Define the image path
+        img = PILImage.new('RGB', (320, 240), color="white")  # Create a blank image
+        d = ImageDraw.Draw(img)  # Initialize the drawing context
         print("Displaying: ", impath)  # Log the image path
         try:
             img = cv2.imread(impath)  # Read the image using OpenCV
@@ -1521,7 +1523,8 @@ class SampleControllerAsync(Node):  # Define the main class for the ROS node
                 raise FileNotFoundError(f"Image not found: {impath}")
             img = cv2.resize(img, (320, 240))  # Resize the image
             cv2.imwrite(impath, img)  # Save the resized image
-            self.disp.show_image(impath)  # Display the image
+            img.save(impath)  # Save the image
+            self.disp.show_image(img)  # Display the image
         except Exception as e:
             print(f"Error displaying image: {e}")  # Log any errors
 
